@@ -86,6 +86,8 @@
     wget
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
