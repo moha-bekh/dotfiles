@@ -1,5 +1,14 @@
 { config, pkgs, ... }:
 
+let
+  dotfiles = "${config.home.homeDirectory}/dotfiles/config";
+  create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
+  configs  = {
+    oxwm = "oxwm";
+    nvim = "nvim";
+  };
+in
+
 {
   home.username = "moha";
   home.homeDirectory = "/home/moha";
@@ -11,8 +20,12 @@
       btw = "echo i use nixos, btw";
     };
   };
-  home.file.".config/oxwm".source = ../config/oxwm;
-  home.file.".config/nvim".source = ../config/nvim;
+
+  xdg.configFile = builtins.mapAttrs (name: subpath : {
+    source = create_symlink "${dotfiles}/${subpath}";
+    recursive = true;
+  }) configs;
+
   home.packages = with pkgs; [
     neovim
     ripgrep
