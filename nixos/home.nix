@@ -33,5 +33,17 @@ in
     nixpkgs-fmt
     nodejs
     gcc
+    starship
+    fzf
+    eza
+    fastfetch
+    btop
+    zoxide
+    fd
+    tealdeer
+    bat
+    gparted
+    rofi
+    claude-code
   ];
 }

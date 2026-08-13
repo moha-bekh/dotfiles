@@ -36,6 +36,9 @@
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
+
+  services.displayManager.ly.enable = true;
+
   services.xserver = {
       enable = true;
       autoRepeatDelay = 200;
