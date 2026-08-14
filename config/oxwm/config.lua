@@ -209,12 +209,11 @@ oxwm.bar.set_scheme_urgent(colors.red, colors.bg, colors.red)
 -- Common keys: Return, Space, Tab, Escape, Backspace, Delete, Left, Right, Up, Down
 
 -- Basic window management
-
-oxwm.key.bind
+oxwm.key.bind({ modkey }, "Return", oxwm.spawn_terminal())
 -- Launch Dmenu
 -- oxwm.key.bind({ modkey }, "D", oxwm.spawn({ "sh", "-c", "dmenu_run -l 10" }))
 oxwm.key.bind({ modkey }, "D", oxwm.spawn({ "sh", "-c", "rofi -show drun" }))
-oxwm.key.bind({ modkey }, "B", oxwm.spawn({ "firefox" }))
+oxwm.key.bind({ modkey }, "B", oxwm.spawn("firefox"))
 -- Copy screenshot to clipboard
 oxwm.key.bind({ modkey }, "S", oxwm.spawn({ "sh", "-c", "maim -s | xclip -selection clipboard -t image/png" }))
 oxwm.key.bind({ modkey }, "Q", oxwm.client.kill())
