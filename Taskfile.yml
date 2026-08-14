@@ -1,0 +1,51 @@
+version: "3"
+
+vars:
+  FLAKE: "."
+
+tasks:
+  default:
+    desc: List available tasks
+    cmd: task --list
+
+  check:
+    desc: Evaluate all flake outputs without building (fast syntax/eval check)
+    cmd: nix flake check --no-build
+
+  update:
+    desc: Update all flake inputs (nixpkgs, home-manager, nix-darwin) and re-lock
+    cmd: nix flake update
+
+  # --- NixOS host: nixos-btw ---
+
+  nixos:switch:
+    desc: Apply the NixOS config (nixos-btw) to the running system
+    cmd: sudo nixos-rebuild switch --flake "{{.FLAKE}}#nixos-btw"
+
+  nixos:boot:
+    desc: Build the NixOS config and set it for next boot, without switching now
+    cmd: sudo nixos-rebuild boot --flake "{{.FLAKE}}#nixos-btw"
+
+  nixos:test:
+    desc: Build and switch NixOS config for this session only (reverts on reboot)
+    cmd: sudo nixos-rebuild test --flake "{{.FLAKE}}#nixos-btw"
+
+  # --- macOS host: macos (M1, aarch64-darwin) ---
+
+  macos:bootstrap:
+    desc: First-ever switch on a fresh Mac, before darwin-rebuild exists on PATH
+    cmd: nix run nix-darwin -- switch --flake "{{.FLAKE}}#macos"
+
+  macos:switch:
+    desc: Apply the macOS config (use after macos:bootstrap has run once)
+    cmd: sudo darwin-rebuild switch --flake "{{.FLAKE}}#macos"
+
+  # --- Arch (or any non-NixOS Linux) host: arch-btw, user-level only ---
+
+  arch:bootstrap:
+    desc: First-ever home-manager switch on a fresh Arch install
+    cmd: nix run home-manager/release-26.05 -- switch --flake "{{.FLAKE}}#moha@arch-btw"
+
+  arch:switch:
+    desc: Apply the user config (use after arch:bootstrap has run once)
+    cmd: home-manager switch --flake "{{.FLAKE}}#moha@arch-btw"

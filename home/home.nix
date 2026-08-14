@@ -1,19 +1,21 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   dotfiles = "${config.home.homeDirectory}/dotfiles/config";
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
-  configs  = {
-    oxwm = "oxwm";
+  configs = {
     nvim = "nvim";
+  } // lib.optionalAttrs pkgs.stdenv.isLinux {
+    oxwm = "oxwm";
   };
 in
 
 {
   home.username = "moha";
-  home.homeDirectory = "/home/moha";
-  programs.git.enable = true;
+  home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/moha" else "/home/moha";
   home.stateVersion = "26.05";
+
+  programs.git.enable = true;
   programs.bash = {
     enable = true;
     shellAliases = {
@@ -21,7 +23,7 @@ in
     };
   };
 
-  xdg.configFile = builtins.mapAttrs (name: subpath : {
+  xdg.configFile = builtins.mapAttrs (name: subpath: {
     source = create_symlink "${dotfiles}/${subpath}";
     recursive = true;
   }) configs;
@@ -42,8 +44,9 @@ in
     fd
     tealdeer
     bat
+    claude-code
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
     gparted
     rofi
-    claude-code
   ];
 }
