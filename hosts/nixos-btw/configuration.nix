@@ -69,22 +69,11 @@
   users.users.moha = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-      tree
-    ];
   };
 
-  programs.firefox.enable = true;
-
-  # List packages installed in system profile.
-  # You can use https://search.nixos.org/ to find more packages (and options).
-  environment.systemPackages = with pkgs; [
-    ghostty
-    tmux
-    neovim
-    git
-    wget
-  ];
+  # CLI/GUI packages (firefox, ghostty, tmux, neovim, git, wget, tree...) live
+  # in home/home.nix, shared across all hosts. Only NixOS/system-only stuff
+  # belongs here.
 
   nixpkgs.config.allowUnfree = true;
 

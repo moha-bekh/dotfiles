@@ -45,9 +45,15 @@ in
     tealdeer
     bat
     claude-code
+    tmux
+    wget
+    tree
+    firefox
+    nerd-fonts.jetbrains-mono
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     gparted
     rofi
     oxwm
+    ghostty
   ];
 }
