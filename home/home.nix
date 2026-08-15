@@ -48,5 +48,6 @@ in
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     gparted
     rofi
+    oxwm
   ];
 }
