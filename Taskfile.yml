@@ -44,8 +44,8 @@ tasks:
 
   arch:bootstrap:
     desc: First-ever home-manager switch on a fresh Arch install
-    cmd: nix run home-manager/release-26.05 -- switch --flake "{{.FLAKE}}#moha@arch-btw"
+    cmd: nix run home-manager/release-26.05 -- switch --flake "{{.FLAKE}}#moha@arch-btw" -b backup
 
   arch:switch:
     desc: Apply the user config (use after arch:bootstrap has run once)
-    cmd: home-manager switch --flake "{{.FLAKE}}#moha@arch-btw"
+    cmd: home-manager switch --flake "{{.FLAKE}}#moha@arch-btw" -b backup
