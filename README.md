@@ -37,6 +37,9 @@ cloned to exactly `~/dotfiles`** on every host, or the symlinks break.
 
 Install Nix first (all platforms), with flakes enabled:
 
+(Once the repo is cloned and `task` is installed, `task install-nix` runs the
+same command.)
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```

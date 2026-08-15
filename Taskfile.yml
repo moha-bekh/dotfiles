@@ -16,6 +16,10 @@ tasks:
     desc: Update all flake inputs (nixpkgs, home-manager, nix-darwin) and re-lock
     cmd: nix flake update
 
+  install-nix:
+    desc: Install Nix (macOS/Arch/any non-NixOS box) — restart your terminal after
+    cmd: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+
   # --- NixOS host: nixos-btw ---
 
   nixos:switch:
