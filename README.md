@@ -26,6 +26,8 @@ dotfiles/
 ├── config/                            # app configs, symlinked into ~/.config by home.nix
 │   ├── nvim/
 │   └── oxwm/                          # Linux only, skipped on Darwin
+├── scripts/
+│   └── arch-packages.sh               # GUI/graphics packages, installed via pacman/yay
 └── Taskfile.yml                       # `task <name>` shortcuts, see below
 ```
 
@@ -87,7 +89,17 @@ installed, not just Arch.
 ```bash
 task arch:bootstrap    # first ever switch
 task arch:switch         # every switch after that
+task arch:packages     # install GUI/graphics packages via pacman/yay (see below)
 ```
+
+GUI/graphics-stack packages (ghostty, gparted, rofi, oxwm) are **not** in
+`home.nix` on Arch — they're installed via `task arch:packages`
+(`scripts/arch-packages.sh`, pacman + yay) instead. Nix-built GUI binaries
+link against Nix's glibc but dlopen the system's libGTK/libEGL/libGL at
+runtime; the version mismatch can silently break OpenGL context creation
+(hit this with ghostty: `Failed to create EGL display`). Anything that talks
+to X11/Wayland/GTK/GL directly should go through this script, not
+`home.packages` — CLI-only tools are unaffected and stay in `home.nix`.
 
 ## Maintenance
 

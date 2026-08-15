@@ -53,3 +53,7 @@ tasks:
   arch:switch:
     desc: Apply the user config (use after arch:bootstrap has run once)
     cmd: home-manager switch --flake "{{.FLAKE}}#moha@arch-btw" -b backup
+
+  arch:packages:
+    desc: Install GUI/graphics-stack packages via pacman/yay (not home-manager) — Arch only
+    cmd: ./scripts/arch-packages.sh
