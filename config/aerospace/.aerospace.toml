@@ -1,0 +1,138 @@
+after-startup-command = [
+  'exec-and-forget borders active_color=#3381ff inactive_color=0xff494d64 width=5.0',
+]
+
+exec-on-workspace-change = [
+  '/bin/bash',
+  '-c',
+  'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE',
+]
+
+start-at-login = true
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+accordion-padding = 30
+
+default-root-container-layout = 'tiles'
+
+default-root-container-orientation = 'auto'
+
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focus-changed = "move-mouse window-lazy-center"
+
+automatically-unhide-macos-hidden-apps = false
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'finder'
+run = 'layout floating'
+
+[key-mapping]
+
+preset = 'qwerty'
+
+[gaps]
+
+inner.horizontal = 8
+inner.vertical = 8
+outer.left = 8
+outer.bottom = 6
+outer.top = 4
+outer.right = 8
+
+[mode.main.binding]
+
+# Application bindings
+# ctrl-alt-cmd-b = "exec-and-forget open -a 'Safari'"
+ctrl-alt-cmd-b = "exec-and-forget open -a 'firefox'"
+ctrl-alt-cmd-enter = "exec-and-forget open -a 'ghostty'"
+ctrl-alt-cmd-f = "exec-and-forget open -a 'Finder'"
+ctrl-alt-cmd-n = "exec-and-forget ghostty start -- nvim"
+ctrl-alt-cmd-c = "exec-and-forget open -a 'Visual Studio Code'"
+ctrl-alt-cmd-o = "exec-and-forget open -a 'Obsidian'"
+
+ctrl-alt-cmd-h = 'focus left'
+ctrl-alt-cmd-j = 'focus down'
+ctrl-alt-cmd-k = 'focus up'
+ctrl-alt-cmd-l = 'focus right'
+
+ctrl-alt-cmd-shift-h = 'move left'
+ctrl-alt-cmd-shift-j = 'move down'
+ctrl-alt-cmd-shift-k = 'move up'
+ctrl-alt-cmd-shift-l = 'move right'
+
+ctrl-alt-cmd-minus = 'resize smart -50'
+ctrl-alt-cmd-equal = 'resize smart +50'
+
+ctrl-alt-cmd-slash = 'layout tiles horizontal vertical'
+ctrl-alt-cmd-comma = 'layout accordion horizontal vertical'
+ctrl-alt-cmd-shift-f = 'fullscreen'
+ctrl-alt-cmd-shift-v = 'layout floating tiling'
+
+ctrl-alt-cmd-1 = 'workspace 1'
+ctrl-alt-cmd-2 = 'workspace 2'
+ctrl-alt-cmd-3 = 'workspace 3'
+ctrl-alt-cmd-4 = 'workspace 4'
+ctrl-alt-cmd-5 = 'workspace 5'
+ctrl-alt-cmd-6 = 'workspace 6'
+ctrl-alt-cmd-7 = 'workspace 7'
+ctrl-alt-cmd-8 = 'workspace 8'
+ctrl-alt-cmd-9 = 'workspace 9'
+ctrl-alt-cmd-0 = 'workspace 10'
+
+ctrl-alt-cmd-shift-1 = ['move-node-to-workspace 1', 'workspace 1']
+ctrl-alt-cmd-shift-2 = ['move-node-to-workspace 2', 'workspace 2']
+ctrl-alt-cmd-shift-3 = ['move-node-to-workspace 3', 'workspace 3']
+ctrl-alt-cmd-shift-4 = ['move-node-to-workspace 4', 'workspace 4']
+ctrl-alt-cmd-shift-5 = ['move-node-to-workspace 5', 'workspace 5']
+ctrl-alt-cmd-shift-6 = ['move-node-to-workspace 6', 'workspace 6']
+ctrl-alt-cmd-shift-7 = ['move-node-to-workspace 7', 'workspace 7']
+ctrl-alt-cmd-shift-8 = ['move-node-to-workspace 8', 'workspace 8']
+ctrl-alt-cmd-shift-9 = ['move-node-to-workspace 9', 'workspace 9']
+ctrl-alt-cmd-shift-0 = ['move-node-to-workspace 10', 'workspace 10']
+
+ctrl-alt-cmd-tab = 'workspace-back-and-forth'
+ctrl-alt-cmd-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+ctrl-alt-cmd-shift-semicolon = 'mode service'
+
+[mode.service.binding]
+
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']                # reset layout
+backspace = ['close-all-windows-but-current', 'mode main']
+
+ctrl-alt-cmd-shift-h = ['join-with left', 'mode main']
+ctrl-alt-cmd-shift-j = ['join-with down', 'mode main']
+ctrl-alt-cmd-shift-k = ['join-with up', 'mode main']
+ctrl-alt-cmd-shift-l = ['join-with right', 'mode main']
+
+# Utils
+
+# All possible keys:
+# - Letters.        a, b, c, ..., z
+# - Numbers.        0, 1, 2, ..., 9
+# - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
+# - F-keys.         f1, f2, ..., f20
+# - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon,
+#                   backtick, leftSquareBracket, rightSquareBracket, space, enter, esc,
+#                   backspace, tab, pageUp, pageDown, home, end, forwardDelete,
+#                   sectionSign (ISO keyboards only, european keyboards only)
+# - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
+#                   keypadMinus, keypadMultiply, keypadPlus
+# - Arrows.         left, down, up, right
+
+# All possible modifiers: cmd, alt, ctrl, shift
+
+# All possible commands: https://nikitabobko.github.io/AeroSpace/commands
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#exec-and-forget
+# You can uncomment the following lines to open up terminal with alt + enter shortcut
+# (like in i3)
+#alt-enter = '''exec-and-forget osascript -e '
+# tell application "Terminal"
+#     do script
+#     activate
+# end tell'
+# '''

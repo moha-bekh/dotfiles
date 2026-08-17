@@ -5,16 +5,29 @@ let
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
   configs = {
     ghostty = "ghostty";
-    tmux = "tmux";
     nvim = "nvim";
     fastfetch = "fastfetch";
     btop = "btop";
+    yazi = "yazi";
+    shell = "shell";
   } // lib.optionalAttrs pkgs.stdenv.isLinux {
     oxwm = "oxwm";
+  } // lib.optionalAttrs pkgs.stdenv.isDarwin {
+    karabiner = "karabiner";
+  };
+
+  # Dotfiles that belong directly in $HOME (not $XDG_CONFIG_HOME).
+  # Key is the target name in $HOME, value is the path under config/.
+  homeFiles = {
+    ".gitconfig" = "git/.gitconfig";
+  } // lib.optionalAttrs pkgs.stdenv.isDarwin {
+    ".aerospace.toml" = "aerospace/.aerospace.toml";
   };
 in
 
 {
+  imports = [ ./tmux.nix ];
+
   home.username = "moha";
   home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/moha" else "/home/moha";
   home.stateVersion = "26.05";
@@ -25,6 +38,15 @@ in
     shellAliases = {
       btw = "echo i use nixos, btw";
     };
+    initExtra = ''
+      source "$HOME/.config/shell/bash.sh"
+    '';
+  };
+  programs.zsh = {
+    enable = true;
+    initContent = ''
+      source "$HOME/.config/shell/zsh.sh"
+    '';
   };
 
   xdg.configFile = builtins.mapAttrs (name: subpath: {
@@ -32,8 +54,12 @@ in
     recursive = true;
   }) configs;
 
+  home.file = builtins.mapAttrs (name: subpath: {
+    source = create_symlink "${dotfiles}/${subpath}";
+    recursive = true;
+  }) homeFiles;
+
   home.packages = with pkgs; [
-    tmux
     neovim
     ripgrep
     nil
@@ -51,9 +77,15 @@ in
     bat
     claude-code
     go-task
+    tmuxifier
+    yazi
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     gparted
     rofi
     oxwm
+    ghostty
+  ] ++ lib.optionals pkgs.stdenv.isDarwin [
+    karabiner-elements
+    aerospace
   ];
 }
