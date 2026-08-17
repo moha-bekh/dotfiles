@@ -50,7 +50,10 @@
     # No system-level module needed: home-manager works on any Linux
     # distro as long as `nix` itself is installed.
     homeConfigurations."moha@arch-btw" = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
       modules = [ ./home/home.nix ];
     };
   };

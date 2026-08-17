@@ -50,8 +50,10 @@ in
     tealdeer
     bat
     claude-code
+    go-task
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     gparted
     rofi
+    oxwm
   ];
 }
