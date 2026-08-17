@@ -4,7 +4,11 @@ let
   dotfiles = "${config.home.homeDirectory}/dotfiles/config";
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
   configs = {
+    ghostty = "ghostty";
+    tmux = "tmux";
     nvim = "nvim";
+    fastfetch = "fastfetch";
+    btop = "btop";
   } // lib.optionalAttrs pkgs.stdenv.isLinux {
     oxwm = "oxwm";
   };
@@ -29,6 +33,7 @@ in
   }) configs;
 
   home.packages = with pkgs; [
+    tmux
     neovim
     ripgrep
     nil
