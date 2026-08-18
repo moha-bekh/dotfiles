@@ -41,6 +41,9 @@ Install Nix first (all platforms), with flakes enabled:
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
 
+Or, if `go-task` is already available on the machine (e.g. installed via
+pacman/brew before Nix): `task nix:install` runs the same command.
+
 On macOS, install Xcode Command Line Tools before that: `xcode-select --install`.
 
 [go-task](https://taskfile.dev) is used to shorten the commands below.
@@ -64,6 +67,11 @@ task nixos:boot       # apply on next boot only
 task nixos:test        # apply for this session, revert on reboot
 ```
 
+Includes KVM/QEMU virtualization (`virtualisation.libvirtd`, `virt-manager`,
+SPICE USB redirection). `moha` is in the `libvirtd`/`kvm` groups — log out
+and back in (or `newgrp libvirtd`) after the first switch for group
+membership to take effect, then launch `virt-manager` to create VMs.
+
 ### macOS (`macos`, M1)
 
 First run on a fresh machine — create a user account named exactly `moha`
@@ -85,6 +93,18 @@ installed, not just Arch.
 task arch:bootstrap    # first ever switch
 task arch:switch         # every switch after that
 ```
+
+Both run with `-b backup`: standalone home-manager has no
+`backupFileExtension` option (that's only available through the
+NixOS/nix-darwin integration modules), so pre-existing dotfiles
+(`~/.bashrc`, etc.) would otherwise make the switch fail on conflict —
+they get renamed to `*.backup` instead.
+
+There's no display manager on plain Arch. `home/home.nix` installs a
+`~/.xinitrc` that execs `oxwm`, so after installing `xorg-server` and
+`xorg-xinit` (via pacman, outside this repo's scope) run `startx` to get
+into oxwm. Running `oxwm` directly from a TTY fails with
+`CannotOpenDisplay` — it needs a running X server first.
 
 ## Maintenance
 

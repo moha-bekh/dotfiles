@@ -68,11 +68,26 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.moha = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "libvirtd" "kvm" ]; # Enable ‘sudo’ for the user, and KVM/libvirt access.
     packages = with pkgs; [
       tree
     ];
   };
+
+  # KVM / QEMU virtual machines via libvirt.
+  virtualisation.libvirtd = {
+    enable = true;
+    qemu = {
+      package = pkgs.qemu_kvm;
+      runAsRoot = true;
+      swtpm.enable = true; # TPM emulation for Windows 11 guests, etc.
+    };
+  };
+  virtualisation.spiceUSBRedirection.enable = true;
+  programs.virt-manager.enable = true;
+
+  # Let libvirtd find guest disks under /var/lib/libvirt (and NAT networking).
+  networking.networkmanager.unmanaged = [ "interface-name:virbr*" ];
 
   programs.firefox.enable = true;
 

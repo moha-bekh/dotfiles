@@ -57,7 +57,13 @@ in
   home.file = builtins.mapAttrs (name: subpath: {
     source = create_symlink "${dotfiles}/${subpath}";
     recursive = true;
-  }) homeFiles;
+  }) homeFiles // lib.optionalAttrs pkgs.stdenv.isLinux {
+    # Lets `startx` launch oxwm on non-NixOS Linux (e.g. Arch), where
+    # there's no display manager wired up via services.xserver like on nixos-btw.
+    ".xinitrc".text = ''
+      exec ${pkgs.oxwm}/bin/oxwm
+    '';
+  };
 
   home.packages = with pkgs; [
     neovim

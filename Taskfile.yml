@@ -8,6 +8,10 @@ tasks:
     desc: List available tasks
     cmd: task --list
 
+  nix:install:
+    desc: Install Nix (Determinate Systems installer, flakes enabled) — run before anything else on a fresh machine
+    cmd: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+
   check:
     desc: Evaluate all flake outputs without building (fast syntax/eval check)
     cmd: nix flake check --no-build
@@ -44,8 +48,11 @@ tasks:
 
   arch:bootstrap:
     desc: First-ever home-manager switch on a fresh Arch install
-    cmd: nix run home-manager/release-26.05 -- switch --flake "{{.FLAKE}}#moha@arch-btw"
+    # -b backup: standalone home-manager (unlike the NixOS/darwin modules) has no
+    # backupFileExtension option, so pre-existing dotfiles (e.g. ~/.bashrc) would
+    # otherwise make the switch fail on conflict. This renames them to *.backup instead.
+    cmd: nix run home-manager/release-26.05 -- switch -b backup --flake "{{.FLAKE}}#moha@arch-btw"
 
   arch:switch:
     desc: Apply the user config (use after arch:bootstrap has run once)
-    cmd: home-manager switch --flake "{{.FLAKE}}#moha@arch-btw"
+    cmd: home-manager switch -b backup --flake "{{.FLAKE}}#moha@arch-btw"
