@@ -28,9 +28,11 @@ let
     ".aerospace.toml" = "aerospace/.aerospace.toml";
   };
   # Auto-launch the GUI on login, on non-NixOS Linux (Arch has no display
-  # manager wired up like nixos-btw's ly). Only on the first virtual console,
-  # so a second/SSH login doesn't also try to steal the display.
-  autostartX = lib.optionalString isNonNixOSLinux ''
+  # manager wired up like nixos-btw's ly) that hasn't set up `ly` itself yet
+  # (via pacman — a system-level service, outside this repo's scope). Only on
+  # the first virtual console, so a second/SSH login doesn't steal the display.
+  # /etc/ly/config.ini is ly's default config path, installed by its pacman package.
+  autostartX = lib.optionalString (isNonNixOSLinux && !(builtins.pathExists "/etc/ly/config.ini")) ''
     if [ -z "''${DISPLAY:-}" ] && [ "$(tty)" = "/dev/tty1" ]; then
       exec startx
     fi
