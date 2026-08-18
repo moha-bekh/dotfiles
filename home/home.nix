@@ -144,6 +144,9 @@ in
     rofi
     oxwm
     ghostty
+    feh # wallpaper — see the commented autostart in config/oxwm/config.lua
+    maim # screenshot — bound to Mod+S in config/oxwm/config.lua
+    xclip # clipboard target for the maim screenshot bind above
   ] ++ lib.optionals isNonNixOSLinux [
     xorg-server
     xinit # provides `startx`
