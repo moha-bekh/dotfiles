@@ -14,6 +14,7 @@ let
     btop = "btop";
     yazi = "yazi";
     shell = "shell";
+    "starship.toml" = "starship/starship.toml";
   } // lib.optionalAttrs pkgs.stdenv.isLinux {
     oxwm = "oxwm";
     picom = "picom";
