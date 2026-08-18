@@ -46,6 +46,15 @@ in
   home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/moha" else "/home/moha";
   home.stateVersion = "26.05";
 
+  # Nix's Mesa is built expecting NixOS's /run/opengl-driver symlink (set up
+  # by hardware.graphics) to find its DRI drivers — that path doesn't exist
+  # on Arch, so GLX/EGL apps (e.g. ghostty) fail with "Unable to acquire an
+  # OpenGL context". LIBGL_DRIVERS_PATH points Mesa straight at its own
+  # store path instead, both for the X server's AIGLX and for GL clients.
+  home.sessionVariables = lib.optionalAttrs isNonNixOSLinux {
+    LIBGL_DRIVERS_PATH = "${pkgs.mesa}/lib/dri";
+  };
+
   programs.git.enable = true;
   programs.bash = {
     enable = true;
