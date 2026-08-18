@@ -3,6 +3,10 @@
 let
   dotfiles = "${config.home.homeDirectory}/dotfiles/config";
   create_symlink = path: config.lib.file.mkOutOfStoreSymlink path;
+  # Arch (or any non-NixOS Linux): needs its own Xorg + startx from Nix, since
+  # there's no services.xserver like on nixos-btw. /etc/NIXOS is the standard
+  # marker file for detecting a real NixOS system.
+  isNonNixOSLinux = pkgs.stdenv.isLinux && !(builtins.pathExists "/etc/NIXOS");
   configs = {
     ghostty = "ghostty";
     nvim = "nvim";
@@ -90,6 +94,9 @@ in
     rofi
     oxwm
     ghostty
+  ] ++ lib.optionals isNonNixOSLinux [
+    xorg-server
+    xinit # provides `startx`
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     karabiner-elements
     aerospace

@@ -55,4 +55,7 @@ tasks:
 
   arch:switch:
     desc: Apply the user config (use after arch:bootstrap has run once)
-    cmd: home-manager switch -b backup --flake "{{.FLAKE}}#moha@arch-btw"
+    # Same `nix run` form as arch:bootstrap: the standalone `home-manager` command
+    # only ends up on PATH if the shell sources the Nix profile's session vars, which
+    # isn't guaranteed on Arch — `nix run` sidesteps that entirely.
+    cmd: nix run home-manager/release-26.05 -- switch -b backup --flake "{{.FLAKE}}#moha@arch-btw"
