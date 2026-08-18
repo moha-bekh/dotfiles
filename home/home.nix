@@ -82,6 +82,24 @@ in
     ".xinitrc".text = ''
       exec ${pkgs.oxwm}/bin/oxwm > "$HOME/.oxwm.log" 2>&1
     '';
+  } // lib.optionalAttrs isNonNixOSLinux {
+    # Nix's xorg-server ships with NO input driver — udev enumerates the
+    # keyboard/mouse fine but Xorg logs "No input driver specified, ignoring
+    # this device" for every one of them, so nothing ever reaches oxwm (the
+    # WM itself stays alive: only input is dead). `-modulepath` (unlike
+    # `-config`/`-configdir`) has no root restriction, so it can point at the
+    # Nix-built xf86-input-libinput driver — same nixpkgs revision as
+    # xorg-server, so no ABI mismatch. The InputClass rule that tells Xorg to
+    # actually *use* that driver still has to live in /etc/X11/xorg.conf.d
+    # (a `-configdir` absolute path is root-only) — a one-time `sudo`
+    # step outside this repo's scope, see README.
+    ".xserverrc" = {
+      executable = true;
+      text = ''
+        #!/bin/sh
+        exec ${pkgs.xorg-server}/bin/X -modulepath "${pkgs.xorg-server}/lib/xorg/modules,${pkgs.xf86-input-libinput}/lib/xorg/modules" "$@"
+      '';
+    };
   };
 
   home.packages = with pkgs; [
@@ -112,6 +130,7 @@ in
   ] ++ lib.optionals isNonNixOSLinux [
     xorg-server
     xinit # provides `startx`
+    xf86-input-libinput # keyboard/mouse driver — see .xserverrc below
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     karabiner-elements
     aerospace
