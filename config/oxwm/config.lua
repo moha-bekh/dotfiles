@@ -332,7 +332,7 @@ oxwm.key.chord({
 -- Commands to run once when OXWM starts
 -- Uncomment and modify these examples, or add your own
 
--- oxwm.autostart("picom")
+oxwm.autostart("picom") -- required for real transparency/blur on X11 — see config/picom/picom.conf
 oxwm.autostart("feh --bg-scale ~/.config/oxwm/assets/cherry-blossom.png")
 -- oxwm.autostart("dunst")
 -- oxwm.autostart("nm-applet")

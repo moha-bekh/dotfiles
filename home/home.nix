@@ -16,6 +16,7 @@ let
     shell = "shell";
   } // lib.optionalAttrs pkgs.stdenv.isLinux {
     oxwm = "oxwm";
+    picom = "picom";
   } // lib.optionalAttrs pkgs.stdenv.isDarwin {
     karabiner = "karabiner";
   };
@@ -144,6 +145,7 @@ in
     rofi
     oxwm
     ghostty
+    picom # compositor — required for transparency/blur, autostarted in config/oxwm/config.lua
     feh # wallpaper — see the commented autostart in config/oxwm/config.lua
     maim # screenshot — bound to Mod+S in config/oxwm/config.lua
     xclip # clipboard target for the maim screenshot bind above

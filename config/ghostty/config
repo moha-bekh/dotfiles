@@ -1,9 +1,9 @@
 theme = TokyoNight Night
 font-size = 12
-background-blur-radius = 20
 mouse-hide-while-typing = true
-window-decoration = true
+window-decoration = false
 # keybind = global:cmd+/=toggle_quick_terminal
 macos-option-as-alt = true
 background-opacity = 0.9
-background-blur-radius = 20 
+# Blur itself comes from picom (see config/picom/picom.conf) — Ghostty's own
+# background-blur is only supported on macOS and KDE Plasma, both no-ops on oxwm/X11.
