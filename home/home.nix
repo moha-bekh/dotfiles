@@ -49,10 +49,18 @@ in
   # Nix's Mesa is built expecting NixOS's /run/opengl-driver symlink (set up
   # by hardware.graphics) to find its DRI drivers — that path doesn't exist
   # on Arch, so GLX/EGL apps (e.g. ghostty) fail with "Unable to acquire an
-  # OpenGL context". LIBGL_DRIVERS_PATH points Mesa straight at its own
-  # store path instead, both for the X server's AIGLX and for GL clients.
+  # OpenGL context". LIBGL_DRIVERS_PATH alone isn't enough: ghostty links
+  # against libglvnd (the vendor-neutral GL/EGL dispatch library), which
+  # never even reaches Mesa's DRI loader unless it can first (a) find
+  # Mesa's EGL vendor JSON — glvnd only looks in /usr|/etc/share/glvnd by
+  # default, neither of which exists on Arch — and (b) dlopen
+  # libGLX_mesa.so.0/libEGL_mesa.so.0 by soname for GLX, which requires
+  # Mesa's lib/ dir on the loader search path since those aren't referenced
+  # by any binary's RPATH.
   home.sessionVariables = lib.optionalAttrs isNonNixOSLinux {
     LIBGL_DRIVERS_PATH = "${pkgs.mesa}/lib/dri";
+    __EGL_VENDOR_LIBRARY_FILENAMES = "${pkgs.mesa}/share/glvnd/egl_vendor.d/50_mesa.json";
+    LD_LIBRARY_PATH = "${pkgs.mesa}/lib";
   };
 
   programs.git.enable = true;
@@ -140,6 +148,8 @@ in
     xorg-server
     xinit # provides `startx`
     xf86-input-libinput # keyboard/mouse driver — see .xserverrc below
+    firefox # nixos-btw gets this via programs.firefox.enable (system module);
+            # arch-btw has no system module, so it needs the package directly
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     karabiner-elements
     aerospace
