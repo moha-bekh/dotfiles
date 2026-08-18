@@ -100,11 +100,52 @@ NixOS/nix-darwin integration modules), so pre-existing dotfiles
 (`~/.bashrc`, etc.) would otherwise make the switch fail on conflict —
 they get renamed to `*.backup` instead.
 
-There's no display manager on plain Arch. `home/home.nix` installs a
-`~/.xinitrc` that execs `oxwm`, so after installing `xorg-server` and
-`xorg-xinit` (via pacman, outside this repo's scope) run `startx` to get
-into oxwm. Running `oxwm` directly from a TTY fails with
-`CannotOpenDisplay` — it needs a running X server first.
+There's no display manager on plain Arch by default. `home/home.nix`
+installs `xorg-server` + `xinit` from Nix (no pacman needed) along with a
+`~/.xinitrc` that execs `oxwm`, and auto-runs `startx` on tty1 login via
+`~/.bash_profile`/`~/.zprofile` — so logging in on tty1 drops straight
+into the GUI. Running `oxwm` directly from a TTY instead of through
+`startx` fails with `CannotOpenDisplay` — it needs a running X server first.
+
+**One-time manual step required**: Nix's `xorg-server` ships with no input
+driver, so the keyboard/mouse get enumerated but never actually respond
+(X logs `No input driver specified, ignoring this device` for each one —
+easy to mistake for a full freeze, since everything else, like oxwm's
+status bar, keeps rendering fine). `home/home.nix` installs the matching
+`xf86-input-libinput` driver and points `~/.xserverrc` at it via
+`-modulepath` (not root-restricted), but the `InputClass` rule that tells
+Xorg to actually *use* that driver has to live under
+`/etc/X11/xorg.conf.d` — `-configdir` only accepts absolute paths as
+root, so this one file can't be home-manager-managed:
+
+```bash
+sudo mkdir -p /etc/X11/xorg.conf.d
+sudo tee /etc/X11/xorg.conf.d/40-libinput.conf > /dev/null <<'EOF'
+Section "InputClass"
+        Identifier "libinput pointer catchall"
+        MatchIsPointer "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "libinput"
+EndSection
+
+Section "InputClass"
+        Identifier "libinput keyboard catchall"
+        MatchIsKeyboard "on"
+        MatchDevicePath "/dev/input/event*"
+        Driver "libinput"
+EndSection
+EOF
+```
+
+For a real display manager instead of the tty1-autostart hack, install
+`ly` (via pacman) — `home/home.nix` detects `/etc/ly/config.ini` and
+skips the autostart trick once it's present:
+
+```bash
+sudo pacman -S ly
+sudo systemctl enable ly.service
+sudo systemctl disable getty@tty1.service
+```
 
 ## Maintenance
 
