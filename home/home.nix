@@ -27,6 +27,14 @@ let
   } // lib.optionalAttrs pkgs.stdenv.isDarwin {
     ".aerospace.toml" = "aerospace/.aerospace.toml";
   };
+  # Auto-launch the GUI on login, on non-NixOS Linux (Arch has no display
+  # manager wired up like nixos-btw's ly). Only on the first virtual console,
+  # so a second/SSH login doesn't also try to steal the display.
+  autostartX = lib.optionalString isNonNixOSLinux ''
+    if [ -z "''${DISPLAY:-}" ] && [ "$(tty)" = "/dev/tty1" ]; then
+      exec startx
+    fi
+  '';
 in
 
 {
@@ -45,12 +53,14 @@ in
     initExtra = ''
       source "$HOME/.config/shell/bash.sh"
     '';
+    profileExtra = autostartX;
   };
   programs.zsh = {
     enable = true;
     initContent = ''
       source "$HOME/.config/shell/zsh.sh"
     '';
+    profileExtra = autostartX;
   };
 
   xdg.configFile = builtins.mapAttrs (name: subpath: {
