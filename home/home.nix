@@ -76,8 +76,11 @@ in
   }) homeFiles // lib.optionalAttrs pkgs.stdenv.isLinux {
     # Lets `startx` launch oxwm on non-NixOS Linux (e.g. Arch), where
     # there's no display manager wired up via services.xserver like on nixos-btw.
+    # Logs to ~/.oxwm.log (plain startx has no ~/.xsession-errors of its own)
+    # so a hang/crash can be diagnosed after the fact, without needing a live,
+    # responsive session.
     ".xinitrc".text = ''
-      exec ${pkgs.oxwm}/bin/oxwm
+      exec ${pkgs.oxwm}/bin/oxwm > "$HOME/.oxwm.log" 2>&1
     '';
   };
 
