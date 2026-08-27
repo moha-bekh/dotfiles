@@ -17,15 +17,16 @@ bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
 # --- Plugins & tool init ---
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# zsh-autosuggestions / zsh-syntax-highlighting are wired in via home-manager
+# (programs.zsh.autosuggestion.enable / .syntaxHighlighting.enable in home.nix),
+# not sourced here — keeps this file brew-free on macOS.
 
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
 
 source <(fzf --zsh)
 
-export PATH="/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:$PATH"
+export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin"
 
 # --- Aliases ---
 alias brc="source ~/.bashrc"
