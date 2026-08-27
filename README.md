@@ -76,12 +76,29 @@ membership to take effect, then launch `virt-manager` to create VMs.
 
 First run on a fresh machine — create a user account named exactly `moha`
 during the macOS setup assistant, since `home.username` and
-`users.users.moha.home` are hardcoded to that name. Then:
+`users.users.moha.home` are hardcoded to that name. Install Homebrew itself
+manually before the first switch — nix-darwin manages the casks below, not
+the `brew` binary:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then:
 
 ```bash
 task macos:bootstrap   # first ever switch, before darwin-rebuild is on PATH
 task macos:switch       # every switch after that
 ```
+
+**Homebrew casks**: `hosts/macos/darwin-configuration.nix` installs `ghostty`
+and `karabiner-elements` via Homebrew instead of nixpkgs. `ghostty` has no
+aarch64-darwin build in nixpkgs at all. `karabiner-elements` does build, but
+it's only the Settings UI — missing the DriverKit system extension and
+launchd daemons that do the actual key remapping (and that make it show up
+under System Settings → Login Items & Extensions → Allow in the Background).
+The cask runs the real upstream `.pkg` installer instead, which sets both up
+correctly.
 
 **Docker**: macOS has no Linux kernel for `dockerd` to run on, so
 `home/home.nix` installs `colima` (a lightweight Linux VM) alongside
