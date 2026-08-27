@@ -1,4 +1,8 @@
 {
+    "global": {
+        "show_in_menu_bar": false,
+        "show_profile_name_in_menu_bar": true
+    },
     "profiles": [
         {
             "complex_modifications": {
@@ -347,7 +351,7 @@
                     "ignore": true
                 }
             ],
-            "name": "Mac",
+            "name": "Air",
             "selected": true,
             "simple_modifications": [
                 {
