@@ -78,6 +78,8 @@ in
   };
   programs.zsh = {
     enable = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
     initContent = ''
       source "$HOME/.config/shell/zsh.sh"
     '';
