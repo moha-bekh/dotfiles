@@ -130,6 +130,10 @@ in
     nixpkgs-fmt
     nodejs
     gcc
+    gnumake
+    go
+    rustc
+    cargo
     starship
     fzf
     eza
@@ -161,5 +165,10 @@ in
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
     karabiner-elements
     aerospace
+    docker-client # CLI only — macOS has no Linux kernel for dockerd itself,
+                   # see colima below for the daemon this talks to
+    colima # lightweight Linux VM providing the docker daemon on macOS,
+           # `colima start` once per boot; NixOS/Arch get a real dockerd
+           # via virtualisation.docker (system module) / pacman instead
   ];
 }

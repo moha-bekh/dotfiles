@@ -68,11 +68,13 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.moha = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "libvirtd" "kvm" ]; # Enable ‘sudo’ for the user, and KVM/libvirt access.
+    extraGroups = [ "wheel" "libvirtd" "kvm" "docker" ]; # sudo, KVM/libvirt, and dockerd access.
     packages = with pkgs; [
       tree
     ];
   };
+
+  virtualisation.docker.enable = true;
 
   # KVM / QEMU virtual machines via libvirt.
   virtualisation.libvirtd = {

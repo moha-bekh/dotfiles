@@ -83,6 +83,15 @@ task macos:bootstrap   # first ever switch, before darwin-rebuild is on PATH
 task macos:switch       # every switch after that
 ```
 
+**Docker**: macOS has no Linux kernel for `dockerd` to run on, so
+`home/home.nix` installs `colima` (a lightweight Linux VM) alongside
+`docker-client` (CLI only). Start the VM once per boot, then use `docker`
+exactly as on Linux:
+
+```bash
+colima start
+```
+
 ### Arch Linux (`arch-btw`) — user config only
 
 No system module: this only manages packages and dotfiles for `moha`, via
@@ -145,6 +154,17 @@ skips the autostart trick once it's present:
 sudo pacman -S ly
 sudo systemctl enable ly.service
 sudo systemctl disable getty@tty1.service
+```
+
+**Docker**: standalone home-manager only manages `moha`'s user packages —
+it can't enable a system-level systemd service, so `dockerd` has to come
+from pacman instead (unlike NixOS, which gets it via
+`virtualisation.docker.enable` in `hosts/nixos-btw/configuration.nix`):
+
+```bash
+sudo pacman -S docker
+sudo systemctl enable --now docker.service
+sudo usermod -aG docker moha   # log out and back in (or `newgrp docker`) after
 ```
 
 ## Maintenance
