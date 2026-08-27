@@ -20,12 +20,17 @@
 
   # ghostty has no aarch64-darwin build in nixpkgs (Linux-only there) — its
   # macOS build is a native .app, only distributed via upstream's installer
-  # or this Homebrew cask. Requires Homebrew itself pre-installed manually
-  # (nix-darwin manages the cask, not the `brew` binary):
+  # or this Homebrew cask.
+  # karabiner-elements: nixpkgs' build is just the Settings UI, missing the
+  # DriverKit system extension and launchd daemons that do the actual key
+  # remapping (and that register it under Login Items > Allow in the
+  # Background). The cask runs the real upstream .pkg installer instead.
+  # Both require Homebrew itself pre-installed manually
+  # (nix-darwin manages the casks, not the `brew` binary):
   #   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   homebrew = {
     enable = true;
-    casks = [ "ghostty" ];
+    casks = [ "ghostty" "karabiner-elements" ];
   };
 
   # Bump only after reading the release notes, same rule as NixOS stateVersion.
