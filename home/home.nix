@@ -163,6 +163,7 @@ in
     firefox # nixos-btw gets this via programs.firefox.enable (system module);
             # arch-btw has no system module, so it needs the package directly
   ] ++ lib.optionals pkgs.stdenv.isDarwin [
+    firefox
     aerospace
     docker-client # CLI only — macOS has no Linux kernel for dockerd itself,
                    # see colima below for the daemon this talks to
