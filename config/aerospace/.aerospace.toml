@@ -36,10 +36,6 @@ run = 'layout floating'
 
 preset = 'qwerty'
 
-[workspace-to-monitor-force-assignment]
-
-1 = 'secondary'
-
 [gaps]
 
 inner.horizontal = 8
@@ -52,13 +48,9 @@ outer.right = 8
 [mode.main.binding]
 
 # Application bindings
-# ctrl-alt-cmd-b = "exec-and-forget open -a 'Safari'"
 ctrl-alt-cmd-b = "exec-and-forget open -a 'firefox'"
 ctrl-alt-cmd-enter = "exec-and-forget open -a 'ghostty'"
 ctrl-alt-cmd-f = "exec-and-forget open -a 'Finder'"
-ctrl-alt-cmd-n = "exec-and-forget ghostty start -- nvim"
-ctrl-alt-cmd-c = "exec-and-forget open -a 'Visual Studio Code'"
-ctrl-alt-cmd-o = "exec-and-forget open -a 'Obsidian'"
 
 ctrl-alt-cmd-h = 'focus left'
 ctrl-alt-cmd-j = 'focus down'
