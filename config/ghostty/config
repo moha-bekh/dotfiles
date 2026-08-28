@@ -1,7 +1,8 @@
 theme = TokyoNight Night
 font-size = 12
 mouse-hide-while-typing = true
-window-decoration = false
+window-decoration = true
+macos-titlebar-style = hidden
 # keybind = global:cmd+/=toggle_quick_terminal
 macos-option-as-alt = true
 background-opacity = 0.9
