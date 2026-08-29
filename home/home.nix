@@ -132,8 +132,12 @@ in
     gcc
     gnumake
     go
+    gopls
+    zig
+    zls
     rustc
     cargo
+    rust-analyzer
     starship
     fzf
     eza
