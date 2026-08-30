@@ -30,7 +30,7 @@
   #   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   homebrew = {
     enable = true;
-    casks = [ "ghostty" "karabiner-elements" ];
+    casks = [ "ghostty" "karabiner-elements" "slack" ];
   };
 
   # Bump only after reading the release notes, same rule as NixOS stateVersion.
