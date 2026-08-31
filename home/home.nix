@@ -151,6 +151,8 @@ in
     go-task
     tmuxifier
     yazi
+    git-lfs
+    granted
   ] ++ lib.optionals pkgs.stdenv.isLinux [
     gparted
     rofi
