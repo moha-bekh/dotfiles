@@ -32,6 +32,11 @@ run = 'layout floating'
 if.app-name-regex-substring = 'system settings|calculator|1password|activity monitor'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-name-regex-substring = 'firefox'
+if.window-title-regex-substring = 'Picture-in-Picture'
+run = 'layout floating'
+
 [key-mapping]
 
 preset = 'qwerty'
