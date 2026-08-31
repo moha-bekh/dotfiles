@@ -37,6 +37,22 @@ if.app-name-regex-substring = 'firefox'
 if.window-title-regex-substring = 'Picture-in-Picture'
 run = 'layout floating'
 
+[[on-window-detected]]
+if.app-name-regex-substring = 'ghostty'
+run = 'move-node-to-workspace 1'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'firefox'
+run = 'move-node-to-workspace 2'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'slack'
+run = 'move-node-to-workspace 7'
+
+[[on-window-detected]]
+if.app-name-regex-substring = 'yt music'
+run = 'move-node-to-workspace 10'
+
 [key-mapping]
 
 preset = 'qwerty'
@@ -56,6 +72,7 @@ outer.right = 8
 ctrl-alt-cmd-b = "exec-and-forget open -a 'firefox'"
 ctrl-alt-cmd-enter = "exec-and-forget open -a 'ghostty'"
 ctrl-alt-cmd-f = "exec-and-forget open -a 'Finder'"
+ctrl-alt-cmd-m = "exec-and-forget open -a 'YT Music'"
 
 ctrl-alt-cmd-h = 'focus left'
 ctrl-alt-cmd-j = 'focus down'
