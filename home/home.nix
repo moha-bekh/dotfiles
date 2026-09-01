@@ -155,21 +155,34 @@ in
     };
   };
 
+  # Language servers come from Nix on every host rather than from nvim's
+  # mason.nvim, and config/nvim/lua/plugins/lsp.lua sets `mason = false` for
+  # each of them so LazyVim uses these instead of downloading its own. Two
+  # reasons: mason has no aarch64-linux build of clangd at all (it fails with
+  # "The current platform is unsupported"), and its prebuilt binaries don't run
+  # on NixOS in the first place — they're linked against /lib64/ld-linux, which
+  # NixOS doesn't have. Nix builds all of them for every host, so the LSP setup
+  # is identical on nixos-btw, macos, arch-btw and both Ubuntu architectures.
   home.packages = with pkgs; [
     neovim
     ripgrep
-    nil
+    nil # nix — LazyVim's lang.nix extra calls this one nil_ls
     nixpkgs-fmt
     nodejs
     gcc
     gnumake
+    clang-tools # C/C++ — provides clangd, which the lang.clangd extra runs off PATH
     go
-    gopls
+    gopls # go
     zig
-    zls
+    zls # zig
+    vtsls # typescript/javascript — the server LazyVim's lang.typescript extra
+          # defaults to (vim.g.lazyvim_ts_lsp), not tsserver/ts_ls
     rustc
     cargo
-    rust-analyzer
+    rust-analyzer # rust — driven by rustaceanvim, which looks for it on PATH;
+                  # the lang.rust extra deliberately leaves nvim-lspconfig's
+                  # rust_analyzer disabled, so this is the one that matters
     starship
     fzf
     eza

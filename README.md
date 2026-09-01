@@ -315,6 +315,22 @@ done
   (`lib.optionalAttrs pkgs.stdenv.isLinux` in `home/home.nix`) — macOS has no
   X11 window manager. The *packages* are gated more tightly still, on
   `gui && isLinux`, so the headless `ubuntu-btw` host gets neither.
+- **Language servers come from Nix, not `mason.nvim`.** `home/home.nix`
+  installs `clang-tools` (clangd), `gopls`, `zls`, `vtsls`, `rust-analyzer` and
+  `nil`, and `config/nvim/lua/plugins/lsp.lua` marks each one `mason = false`
+  plus sets mason's `PATH = "append"` so those win over any copy mason already
+  downloaded. Two things force this: mason has no aarch64-linux `clangd` at all
+  (`The current platform is unsupported.` — so C/C++ has no LSP on an ARM VM),
+  and mason's prebuilt binaries are linked against `/lib64/ld-linux`, which
+  doesn't exist on NixOS. Servers nixpkgs isn't asked for here (`lua_ls`,
+  `marksman`, `terraform-ls`, the ansible/docker ones) still come from mason.
+- `rust-analyzer` is driven by **rustaceanvim**, not nvim-lspconfig —
+  LazyVim's `lang.rust` extra sets `rust_analyzer = { enabled = false }` on
+  purpose and rustaceanvim picks the binary up from `$PATH`. That's why it
+  isn't in the `mason = false` list.
+- `zls` reports parse errors but not type errors out of the box: semantic Zig
+  diagnostics need `enable_build_on_save`, which makes zls run `zig build` on
+  every save. Hover, completion and go-to-definition work regardless.
 - `config/git/.gitconfig` sets `interactive.diffFilter = delta`, so `delta` is
   in the shared package list — without it `git add -p` fails on any host that
   didn't happen to have it from pacman/brew. `unzip` is there for the same
