@@ -2,6 +2,13 @@ version: "3"
 
 vars:
   FLAKE: "."
+  HM: "home-manager/release-26.05"
+  # The standalone (non-NixOS) flake outputs are emitted per architecture —
+  # see the forBothArches comment in flake.nix. Resolving the suffix here from
+  # `uname -m` is what lets the same `task` command work on an x86_64 VM and an
+  # aarch64 one (Apple silicon, Graviton, OrbStack) without a second recipe.
+  ARCH_SUFFIX:
+    sh: '[ "$(uname -m)" = "x86_64" ] && echo "" || echo "-aarch64"'
 
 tasks:
   default:
@@ -44,18 +51,53 @@ tasks:
     desc: Apply the macOS config (use after macos:bootstrap has run once)
     cmd: sudo darwin-rebuild switch --flake "{{.FLAKE}}#macos"
 
-  # --- Arch (or any non-NixOS Linux) host: arch-btw, user-level only ---
+  # --- Standalone home-manager hosts (any non-NixOS Linux), user-level only ---
+  #
+  # All of these use `nix run` rather than the `home-manager` command: the
+  # standalone binary only ends up on PATH if the shell sources the Nix
+  # profile's session vars, which isn't guaranteed off NixOS — `nix run`
+  # sidesteps that entirely.
+  #
+  # -b backup: standalone home-manager (unlike the NixOS/darwin modules) has no
+  # backupFileExtension option, so pre-existing dotfiles (e.g. the distro's own
+  # ~/.bashrc) would otherwise make the switch fail on conflict. This renames
+  # them to *.backup instead.
+
+  home:switch:
+    desc: 'Apply a standalone home-manager host by name (internal: HOST=ubuntu-btw task home:switch)'
+    internal: true
+    requires:
+      vars: [HOST]
+    cmd: nix run "{{.HM}}" -- switch -b backup --flake "{{.FLAKE}}#moha@{{.HOST}}{{.ARCH_SUFFIX}}"
+
+  # --- Arch (or any non-NixOS Linux) host: arch-btw ---
 
   arch:bootstrap:
     desc: First-ever home-manager switch on a fresh Arch install
-    # -b backup: standalone home-manager (unlike the NixOS/darwin modules) has no
-    # backupFileExtension option, so pre-existing dotfiles (e.g. ~/.bashrc) would
-    # otherwise make the switch fail on conflict. This renames them to *.backup instead.
-    cmd: nix run home-manager/release-26.05 -- switch -b backup --flake "{{.FLAKE}}#moha@arch-btw"
+    cmds:
+      - task: home:switch
+        vars: { HOST: arch-btw }
 
   arch:switch:
-    desc: Apply the user config (use after arch:bootstrap has run once)
-    # Same `nix run` form as arch:bootstrap: the standalone `home-manager` command
-    # only ends up on PATH if the shell sources the Nix profile's session vars, which
-    # isn't guaranteed on Arch — `nix run` sidesteps that entirely.
-    cmd: nix run home-manager/release-26.05 -- switch -b backup --flake "{{.FLAKE}}#moha@arch-btw"
+    desc: Apply the user config on Arch (use after arch:bootstrap has run once)
+    cmds:
+      - task: home:switch
+        vars: { HOST: arch-btw }
+
+  # --- Ubuntu/Debian host: ubuntu-btw (headless) / ubuntu-btw-gui (desktop) ---
+
+  ubuntu:bootstrap:
+    desc: First-ever setup on a fresh Ubuntu VM — apt prereqs, Nix, then switch (accepts --gui / --docker / --zsh)
+    cmd: ./scripts/bootstrap-ubuntu.sh {{.CLI_ARGS}}
+
+  ubuntu:switch:
+    desc: Apply the headless Ubuntu config (no Xorg/oxwm/ghostty/firefox)
+    cmds:
+      - task: home:switch
+        vars: { HOST: ubuntu-btw }
+
+  ubuntu:switch:gui:
+    desc: Apply the desktop Ubuntu config (adds Xorg, oxwm, ghostty, firefox, fonts)
+    cmds:
+      - task: home:switch
+        vars: { HOST: ubuntu-btw-gui }

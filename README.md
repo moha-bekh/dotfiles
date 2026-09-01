@@ -1,23 +1,47 @@
 # dotfiles
 
-Multi-OS config for `moha`, managed with Nix flakes. One repo, three hosts:
+Multi-OS config for `moha`, managed with Nix flakes. One repo, four hosts:
 
-| Host          | OS                    | Manages              | Flake output                        |
-|---------------|-----------------------|-----------------------|--------------------------------------|
-| `nixos-btw`   | NixOS                 | system + user         | `nixosConfigurations.nixos-btw`      |
-| `macos`       | macOS (M1, 2020)      | system + user         | `darwinConfigurations.macos`         |
-| `arch-btw`    | Arch Linux (any distro)| user only             | `homeConfigurations."moha@arch-btw"` |
+| Host               | OS                          | Manages       | Flake output                                |
+|--------------------|-----------------------------|---------------|---------------------------------------------|
+| `nixos-btw`        | NixOS                       | system + user | `nixosConfigurations.nixos-btw`             |
+| `macos`            | macOS (M1, 2020)            | system + user | `darwinConfigurations.macos`                |
+| `arch-btw`         | Arch Linux (any distro)     | user only     | `homeConfigurations."moha@arch-btw"`        |
+| `ubuntu-btw`       | Ubuntu/Debian, headless     | user only     | `homeConfigurations."moha@ubuntu-btw"`      |
+| `ubuntu-btw-gui`   | Ubuntu/Debian, with display | user only     | `homeConfigurations."moha@ubuntu-btw-gui"`  |
 
-All three share the same `home/home.nix` (packages, shell, symlinked app configs).
+All of them share the same `home/home.nix` (packages, shell, symlinked app configs).
 Only the system layer differs per OS: `hosts/nixos-btw/configuration.nix` (NixOS)
-and `hosts/macos/darwin-configuration.nix` (nix-darwin). Arch has no system module —
-Arch isn't NixOS, so only home-manager (user-level) applies there.
+and `hosts/macos/darwin-configuration.nix` (nix-darwin). Arch and Ubuntu have no
+system module — they aren't NixOS, so only home-manager (user-level) applies there.
+
+### Architectures
+
+Every standalone (non-NixOS) host is emitted twice, once per architecture:
+`moha@<host>` is `x86_64-linux` and `moha@<host>-aarch64` is `aarch64-linux`.
+Two names are needed because `homeConfigurations` is a plain attrset and a
+flake can't read the builder's architecture in pure eval
+(`builtins.currentSystem` is off limits). Nothing has to be typed by hand
+though — `Taskfile.yml` and `scripts/bootstrap-ubuntu.sh` both derive the
+suffix from `uname -m`, so `task ubuntu:switch` picks the right output on an
+Intel VM and on an ARM one alike.
+
+### Headless vs. desktop
+
+`home/home.nix` takes a `gui` flag (passed from `flake.nix` via
+`extraSpecialArgs`, default `true`). Setting it to `false` — as
+`ubuntu-btw` does — drops Xorg, `oxwm`, `ghostty`, `firefox`, `gparted`,
+`rofi` and the fonts, and skips the Mesa `LD_LIBRARY_PATH` workaround. On a
+box with no display those are a few hundred MB that can never be used, and
+the `LD_LIBRARY_PATH` one is worse than useless there: it's inherited by
+every process in the login session, where it can shadow the distro's own
+`glibc`/`libstdc++` for system binaries.
 
 ## Layout
 
 ```
 dotfiles/
-├── flake.nix                          # all 3 outputs live here
+├── flake.nix                          # every host output lives here
 ├── home/home.nix                      # shared: packages, shell, xdg symlinks
 ├── hosts/
 │   ├── nixos-btw/configuration.nix    # NixOS system config
@@ -26,6 +50,8 @@ dotfiles/
 ├── config/                            # app configs, symlinked into ~/.config by home.nix
 │   ├── nvim/
 │   └── oxwm/                          # Linux only, skipped on Darwin
+├── scripts/
+│   └── bootstrap-ubuntu.sh            # one-shot Ubuntu setup, see below
 └── Taskfile.yml                       # `task <name>` shortcuts, see below
 ```
 
@@ -42,7 +68,9 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 ```
 
 Or, if `go-task` is already available on the machine (e.g. installed via
-pacman/brew before Nix): `task nix:install` runs the same command.
+pacman/brew before Nix): `task nix:install` runs the same command. On
+Ubuntu/Debian, skip this — `scripts/bootstrap-ubuntu.sh` installs Nix itself,
+after the apt packages the installer depends on.
 
 On macOS, install Xcode Command Line Tools before that: `xcode-select --install`.
 
@@ -164,8 +192,10 @@ EOF
 ```
 
 For a real display manager instead of the tty1-autostart hack, install
-`ly` (via pacman) — `home/home.nix` detects `/etc/ly/config.ini` and
-skips the autostart trick once it's present:
+`ly` (via pacman) — `home/home.nix` skips the autostart trick once it
+detects one, either at `/etc/ly/config.ini` or as an enabled
+`/etc/systemd/system/display-manager.service` (which is how gdm3, sddm and
+lightdm register themselves):
 
 ```bash
 sudo pacman -S ly
@@ -184,22 +214,108 @@ sudo systemctl enable --now docker.service
 sudo usermod -aG docker moha   # log out and back in (or `newgrp docker`) after
 ```
 
+### Ubuntu / Debian (`ubuntu-btw`, `ubuntu-btw-gui`) — user config only
+
+Same standalone home-manager setup as Arch, with a bootstrap script that also
+handles the two things Arch's instructions leave to `pacman`: the handful of
+apt packages Nix's own installer needs, and the system services home-manager
+can't touch. One command on a brand-new VM, on either architecture:
+
+```bash
+git clone https://github.com/moha-bekh/dotfiles ~/dotfiles
+~/dotfiles/scripts/bootstrap-ubuntu.sh          # headless VM
+~/dotfiles/scripts/bootstrap-ubuntu.sh --gui --docker --zsh
+```
+
+Or, with nothing cloned yet:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/moha-bekh/dotfiles/main/scripts/bootstrap-ubuntu.sh | bash
+```
+
+It is idempotent — every step checks whether it already ran — so re-running it
+after a failure or a change of flags is fine. In order, it:
+
+1. refuses to continue as `root` or as a user other than `moha` (both are
+   hardcoded in `home/home.nix`, and failing here beats failing halfway
+   through a switch);
+2. resolves the flake target from `uname -m` and the `--gui` flag, e.g.
+   `.#moha@ubuntu-btw-aarch64`;
+3. `apt install`s only what Nix itself needs first: `curl`, `xz-utils`
+   (**not** in a minimal Ubuntu image, and the installer downloads a
+   `.tar.xz`), `ca-certificates`, `git`. Everything else deliberately comes
+   from Nix — that's what keeps the hosts identical;
+4. clones the repo to `~/dotfiles` if it isn't there;
+5. removes a `~/.config` → `dotfiles/config` symlink if one exists (see below);
+6. installs Nix via the Determinate Systems installer if absent, then sources
+   `nix-daemon.sh` — the installer only patches *login* shell files, so `nix`
+   is not on `PATH` in the already-running shell;
+7. runs the home-manager switch;
+8. with `--docker`, installs `docker.io` + `docker-compose-v2` from apt,
+   enables the service and adds you to the `docker` group. This can't come
+   from the flake: standalone home-manager manages `moha`'s user packages
+   only and cannot enable a system-level systemd unit — same reason Arch
+   gets Docker from pacman, while NixOS gets it from
+   `virtualisation.docker.enable`;
+9. with `--gui`, writes `/etc/X11/xorg.conf.d/40-libinput.conf` — the one
+   root-owned file behind the Arch section's "one-time manual step", so on
+   Ubuntu it isn't manual;
+10. with `--zsh`, adds `~/.nix-profile/bin/zsh` to `/etc/shells` (`chsh`
+    rejects anything absent from it) and makes it the login shell.
+
+Then, for every update after that:
+
+```bash
+task ubuntu:switch        # headless
+task ubuntu:switch:gui    # desktop
+```
+
+**Don't symlink `~/.config` to `config/` wholesale.** It looks like a shortcut
+to the same result and isn't: every application on the machine then gets write
+access to the repo (so `~/.config/foo/state.json` shows up in `git status`), the
+macOS- and Arch-only configs become visible on Ubuntu too, home-manager writes
+*its* symlinks into the repo, and nothing installs the packages those configs
+drive. The flake links each app directory individually via
+`mkOutOfStoreSymlink` instead, which is why the switch is what gives you the
+full config and not just the files.
+
+**Ubuntu Desktop already has a display manager** (gdm3), so `--gui` does not
+add the tty1 `startx` autostart that Arch gets — `home/home.nix` detects the
+enabled `display-manager.service` and skips it. To actually land in `oxwm`
+rather than GNOME, pick it from the session list at the login screen; that
+needs a `.desktop` session file under `/usr/share/xsessions`, which is
+root-owned and therefore outside this repo. The `startx`-on-tty1 path works
+unchanged on Ubuntu Server.
+
 ## Maintenance
 
 ```bash
-task check     # nix flake check --no-build — validates all 3 hosts evaluate cleanly
+task check     # nix flake check --no-build — evaluates the NixOS/darwin outputs
 task update    # bump nixpkgs / home-manager / nix-darwin, re-lock
 ```
 
 Run `task check` after editing `home/home.nix` or any host file, before
-switching — it catches eval errors on all three hosts in one shot without
-building anything.
+switching — it catches eval errors without building anything. Note that it
+only covers the flake's standard outputs: `homeConfigurations` isn't one of
+them, so the standalone hosts aren't checked by it. Evaluate those explicitly:
+
+```bash
+nix eval .#homeConfigurations --apply builtins.attrNames        # list every name
+for h in ubuntu-btw ubuntu-btw-aarch64 ubuntu-btw-gui-aarch64; do
+  nix eval --raw ".#homeConfigurations.\"moha@$h\".activationPackage.drvPath"
+done
+```
 
 ## Notes
 
 - `system.stateVersion` (NixOS) and `system.stateVersion` (nix-darwin) are
   set once at first install and should never be bumped afterward — they pin
   on-disk data format compatibility, not the Nixpkgs version in use.
-- `programs.oxwm` / the `oxwm` config symlink only apply on Linux
+- The `oxwm` and `picom` config symlinks only apply on Linux
   (`lib.optionalAttrs pkgs.stdenv.isLinux` in `home/home.nix`) — macOS has no
-  X11 window manager.
+  X11 window manager. The *packages* are gated more tightly still, on
+  `gui && isLinux`, so the headless `ubuntu-btw` host gets neither.
+- `config/git/.gitconfig` sets `interactive.diffFilter = delta`, so `delta` is
+  in the shared package list — without it `git add -p` fails on any host that
+  didn't happen to have it from pacman/brew. `unzip` is there for the same
+  reason: LazyVim's `mason.nvim` shells out to it to unpack LSP servers.
