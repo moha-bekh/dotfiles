@@ -50,6 +50,8 @@ dotfiles/
 ├── config/                            # app configs, symlinked into ~/.config by home.nix
 │   ├── nvim/
 │   └── oxwm/                          # Linux only, skipped on Darwin
+├── non-nix/                           # hand-installed configs, NOT wired into home.nix
+│   └── tmux/tmux.conf                 # standalone twin of home/tmux.nix
 ├── scripts/
 │   └── bootstrap-ubuntu.sh            # one-shot Ubuntu setup, see below
 └── Taskfile.yml                       # `task <name>` shortcuts, see below
@@ -58,6 +60,12 @@ dotfiles/
 `home/home.nix` symlinks `config/*` into `~/.config/*` via
 `mkOutOfStoreSymlink`, pointing at `~/dotfiles/config/...`. **The repo must be
 cloned to exactly `~/dotfiles`** on every host, or the symlinks break.
+
+`non-nix/` is the exception: nothing under it is referenced by any Nix file.
+It holds configs for programs that home-manager generates natively (so there's
+no `config/` entry to symlink), kept around for distros where home-manager
+isn't applied at all. `non-nix/tmux/tmux.conf` mirrors what `home/tmux.nix`
+produces — **edit both or they drift.**
 
 ## Prerequisites
 
