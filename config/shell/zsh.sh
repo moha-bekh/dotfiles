@@ -26,7 +26,7 @@ eval "$(starship init zsh)"
 
 source <(fzf --zsh)
 
-export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin"
+export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:/Users/moha/.local/bin"
 
 # --- Aliases ---
 alias brc="source ~/.bashrc"

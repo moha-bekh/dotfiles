@@ -9,10 +9,11 @@ HISTSIZE=32768
 HISTFILESIZE="${HISTSIZE}"
 
 if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
+  . /usr/share/bash-completion/bash_completion
 fi
 
-export PATH="./bin:$HOME/.local/bin:$HOME/.local/share/arch/bin:$PATH"
+export PATH="./bin:$HOME/.local/bin:$HOME/.local/share/arch/bin:$PATH:/Users/moha/.local/bin"
+
 set +h
 
 # --- Prompt ---
@@ -21,15 +22,15 @@ PS1="\[\e]0;\w\a\]$PS1"
 eval "$(starship init bash)"
 
 # --- Tool init ---
-if command -v mise &> /dev/null; then
+if command -v mise &>/dev/null; then
   eval "$(mise activate bash)"
 fi
 
-if command -v zoxide &> /dev/null; then
+if command -v zoxide &>/dev/null; then
   eval "$(zoxide init bash)"
 fi
 
-if command -v fzf &> /dev/null; then
+if command -v fzf &>/dev/null; then
   if [[ -f /usr/share/bash-completion/completions/fzf ]]; then
     source /usr/share/bash-completion/completions/fzf
   fi
@@ -83,7 +84,7 @@ web2app() {
     return 1
   fi
 
-  cat > "$DESKTOP_FILE" <<EOF
+  cat >"$DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Version=1.0
 Name=$APP_NAME
