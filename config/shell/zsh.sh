@@ -64,3 +64,5 @@ function y() {
 	fi
 	rm -f -- "$tmp"
 }
+
+export GPG_TTY=$(tty)

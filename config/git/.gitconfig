@@ -1,6 +1,7 @@
 [user]
 	name = moha-bekh
-	email = mohabekpro@gmail.com
+	email = moha.bekh.pro@gmail.com
+	signingkey = 2CA767DE743E4400
 [alias]
 	st = status
   lg = log --graph --pretty=format:'%Cblue%h%Creset %ad %s %C(blue)%d%Creset %C(bold magenta)<%an>%Creset' --date=short
@@ -22,3 +23,7 @@
 	process = git-lfs filter-process
 [diff "lfstext"]
 	textconv = cat
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
