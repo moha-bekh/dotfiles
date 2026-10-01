@@ -33,10 +33,12 @@ case "$(uname -m)" in
   x86_64)
     NVIM_ARCH="x86_64"
     FASTFETCH_ARCH="amd64"
+    YQ_ARCH="amd64"
     ;;
   aarch64 | arm64)
     NVIM_ARCH="arm64"
     FASTFETCH_ARCH="aarch64"
+    YQ_ARCH="arm64"
     ;;
   *) die "unsupported architecture $(uname -m)" ;;
 esac
@@ -53,6 +55,17 @@ trap 'rm -rf "$TMP"' EXIT
 # neovim, starship and fastfetch are deliberately absent: noble's neovim is
 # 0.9 (too old for LazyVim), and the other two aren't packaged at all.
 
+# yazi isn't in Ubuntu either, but upstream runs its own APT repo (amd64 +
+# arm64, ships both `yazi` and `ya`): https://yazi-rs.github.io/docs/installation/
+YAZI_KEYRING=/usr/share/keyrings/yazi-keyring.gpg
+YAZI_LIST=/etc/apt/sources.list.d/yazi.list
+if [ ! -f "$YAZI_LIST" ]; then
+  log "apt: adding the yazi repository"
+  curl -fsSL https://yazi-rs.github.io/builds/yazi-keyring.gpg | sudo tee "$YAZI_KEYRING" >/dev/null
+  echo "deb [signed-by=$YAZI_KEYRING] https://yazi-rs.github.io/builds/ stable main" |
+    sudo tee "$YAZI_LIST" >/dev/null
+fi
+
 APT_PKGS=(
   curl ca-certificates xz-utils unzip fontconfig
   stow
@@ -66,6 +79,15 @@ APT_PKGS=(
   build-essential ripgrep fd-find
   # used by config/shell/*.sh
   fzf eza zoxide bat
+  # yazi and its previewers/helpers (it also uses fd, rg, fzf, zoxide above).
+  # Left out: ImageMagick (yazi wants >= 7.1.1, noble ships 6.9) and
+  # xclip/xsel (need an X display, which a server doesn't have).
+  yazi
+  file          # mime-type detection — the one hard dependency
+  ffmpeg        # video thumbnails
+  7zip          # archive preview and extraction
+  jq            # JSON preview
+  poppler-utils # PDF preview
 )
 
 MISSING=()
@@ -125,7 +147,60 @@ else
   sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get install -y "$TMP/fastfetch.deb"
 fi
 
-# --- 5. JetBrainsMono Nerd Font ---------------------------------------------
+# --- 5. resvg (upstream release, for yazi's SVG preview) --------------------
+# Not packaged for noble, and upstream only publishes an x86_64 Linux build.
+
+if command -v resvg >/dev/null; then
+  log "resvg: already installed"
+elif [ "$NVIM_ARCH" != "x86_64" ]; then
+  warn "resvg: no prebuilt $(uname -m) binary upstream — skipping (yazi just won't preview SVGs)"
+else
+  log "resvg: installing to $LOCAL_BIN"
+  curl -fsSL -o "$TMP/resvg.tar.gz" \
+    https://github.com/linebender/resvg/releases/latest/download/resvg-linux-x86_64.tar.gz
+  mkdir -p "$TMP/resvg"
+  tar -C "$TMP/resvg" -xzf "$TMP/resvg.tar.gz"
+  install -m 755 "$(find "$TMP/resvg" -type f -name resvg | head -1)" "$LOCAL_BIN/resvg"
+fi
+
+# --- 6. yq (upstream release) -----------------------------------------------
+# mikefarah's Go yq — apt's `yq` is a different tool (a Python jq wrapper).
+
+if command -v yq >/dev/null; then
+  log "yq: $(yq --version) already installed"
+else
+  log "yq: installing to $LOCAL_BIN"
+  curl -fsSL -o "$LOCAL_BIN/yq" \
+    "https://github.com/mikefarah/yq/releases/latest/download/yq_linux_$YQ_ARCH"
+  chmod +x "$LOCAL_BIN/yq"
+fi
+
+# --- 7. coding agents: claude, omp, herdr ------------------------------------
+# All three ship their own installer that drops a binary in ~/.local/bin.
+
+if command -v claude >/dev/null; then
+  log "claude: already installed"
+else
+  log "claude: installing Claude Code"
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
+
+if command -v omp >/dev/null; then
+  log "omp: already installed"
+else
+  # --binary: the prebuilt binary, not a bun install (bun isn't here)
+  log "omp: installing oh-my-pi to $LOCAL_BIN"
+  curl -fsSL https://omp.sh/install | PI_INSTALL_DIR="$LOCAL_BIN" sh -s -- --binary
+fi
+
+if command -v herdr >/dev/null; then
+  log "herdr: already installed"
+else
+  log "herdr: installing to $LOCAL_BIN"
+  curl -fsSL https://herdr.dev/install.sh | HERDR_INSTALL_DIR="$LOCAL_BIN" sh
+fi
+
+# --- 8. JetBrainsMono Nerd Font ---------------------------------------------
 # Only matters for whatever terminal renders this machine's output — over SSH
 # that's the client's font — but starship/eza icons need it on a local console.
 
@@ -141,7 +216,7 @@ else
   fc-cache -f "$FONT_DIR" >/dev/null
 fi
 
-# --- 6. stow the configs ----------------------------------------------------
+# --- 9. stow the configs ----------------------------------------------------
 # config/<app>/ holds the *contents* of ~/.config/<app>/ (that's the layout
 # home/home.nix links from), so each package gets its own target dir instead
 # of the usual single `stow -t ~`.
@@ -170,7 +245,7 @@ stow_pkg() {
 }
 
 log "stow: linking configs from $DOTFILES"
-for app in nvim btop fastfetch shell; do
+for app in nvim btop fastfetch shell yazi; do
   stow_pkg "$DOTFILES/config" "$app" "$HOME/.config/$app"
 done
 stow_pkg "$DOTFILES/config" starship "$HOME/.config"
@@ -178,7 +253,12 @@ stow_pkg "$DOTFILES/config" git "$HOME"
 # On Nix hosts home/tmux.nix generates tmux.conf; this is its standalone twin.
 stow_pkg "$DOTFILES/non-nix" tmux "$HOME/.config/tmux"
 
-# --- 7. bash ----------------------------------------------------------------
+# config/yazi/package.toml pins the flavor theme.toml uses; flavors/ itself is
+# gitignored, so fetch it.
+log "yazi: installing flavors/plugins from package.toml"
+ya pkg install >/dev/null || warn "ya pkg install failed — run it by hand, or yazi falls back to its default theme"
+
+# --- 10. bash ---------------------------------------------------------------
 # Keep Ubuntu's own ~/.bashrc (it sets up lesspipe, dircolors, etc.) and just
 # hook config/shell/bash.sh onto the end of it, like home.nix's initExtra.
 
@@ -191,7 +271,7 @@ else
   printf '\n# dotfiles\n%s\n' "$BASHRC_LINE" >>"$HOME/.bashrc"
 fi
 
-# --- 8. tmux plugins (tpm) --------------------------------------------------
+# --- 11. tmux plugins (tpm) -------------------------------------------------
 
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ -d "$TPM_DIR/.git" ]; then
@@ -213,7 +293,7 @@ tmux source-file "$HOME/.config/tmux/tmux.conf" 2>/dev/null || true
   warn "tpm plugin install failed — press prefix + I inside tmux to retry"
 [ "$STARTED_TMUX" -eq 1 ] && tmux kill-session -t tpm-install 2>/dev/null || true
 
-# --- 9. ssh -----------------------------------------------------------------
+# --- 12. ssh ----------------------------------------------------------------
 # sshd_config is left alone on purpose: a wrong edit there locks you out of a
 # remote box. This only makes sure the daemon runs and an agent is there for
 # `ssh-add` — no key is generated, bring your own.
@@ -256,7 +336,7 @@ else
   printf '%s\n' "$AGENT_LINE" >>"$HOME/.bashrc"
 fi
 
-# --- 10. git ----------------------------------------------------------------
+# --- 13. git ----------------------------------------------------------------
 
 git lfs install --skip-repo >/dev/null
 

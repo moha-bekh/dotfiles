@@ -29,3 +29,13 @@ zd() {
     z "$@" && printf " \U000F17A9 " && pwd || echo "Error: Directory not found"
   fi
 }
+
+# yazi wrapper: cd into the directory yazi was in when it quit
+y() {
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+    builtin cd -- "$cwd"
+  fi
+  rm -f -- "$tmp"
+}
