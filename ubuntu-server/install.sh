@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Set up a fresh Ubuntu Server without Nix: apt for whatever Ubuntu ships
-# recent enough, upstream releases for the rest, and GNU stow to symlink the
-# configs from this repo into place.
+# recent enough, upstream releases for the rest, and symlinks from this repo
+# for the configs.
 #
 # Safe to re-run — every step checks whether it already happened, and any
-# real file stow would collide with is moved aside to *.bak-<timestamp>.
+# real file a symlink would replace is moved aside to *.bak-<timestamp>.
 #
 #   ~/dotfiles/ubuntu-server/install.sh
 set -euo pipefail
@@ -216,13 +216,14 @@ else
   fc-cache -f "$FONT_DIR" >/dev/null
 fi
 
-# --- 9. stow the configs ----------------------------------------------------
-# config/<app>/ holds the *contents* of ~/.config/<app>/ (that's the layout
-# home/home.nix links from), so each package gets its own target dir instead
-# of the usual single `stow -t ~`.
+# --- 9. link the configs ---------------------------------------------------
+# Each ~/.config/<app> is one symlink to config/<app>/ (the layout home/home.nix
+# links from), so files apps create there — new nvim plugin specs, lazy-lock
+# updates — land straight in the repo. The two single files outside an app dir
+# (starship.toml, ~/.gitconfig) still go through stow.
 #
-# stow refuses to replace real files, so anything already in the way — e.g.
-# Ubuntu's stock files, or a config copied by hand earlier — is moved aside.
+# Anything already in the way — Ubuntu's stock files, a config copied by hand,
+# an older per-file stow layout — is moved aside to *.bak-<timestamp>.
 
 backup_conflicts() {
   local pkg="$1" target="$2" rel t
@@ -244,14 +245,27 @@ stow_pkg() {
   echo "  $name -> $target"
 }
 
-log "stow: linking configs from $DOTFILES"
+# link_dir <source dir> <target>
+link_dir() {
+  local src="$1" target="$2"
+  if [ "$(readlink -f "$target")" != "$(readlink -f "$src")" ]; then
+    if [ -e "$target" ] || [ -L "$target" ]; then
+      warn "moving $target aside to $target.bak-$STAMP"
+      mv "$target" "$target.bak-$STAMP"
+    fi
+    ln -s "$src" "$target"
+  fi
+  echo "  $target -> $src"
+}
+
+log "linking configs from $DOTFILES"
 for app in nvim btop fastfetch shell yazi; do
-  stow_pkg "$DOTFILES/config" "$app" "$HOME/.config/$app"
+  link_dir "$DOTFILES/config/$app" "$HOME/.config/$app"
 done
+# On Nix hosts home/tmux.nix generates tmux.conf; this is its standalone twin.
+link_dir "$DOTFILES/non-nix/tmux" "$HOME/.config/tmux"
 stow_pkg "$DOTFILES/config" starship "$HOME/.config"
 stow_pkg "$DOTFILES/config" git "$HOME"
-# On Nix hosts home/tmux.nix generates tmux.conf; this is its standalone twin.
-stow_pkg "$DOTFILES/non-nix" tmux "$HOME/.config/tmux"
 
 # config/yazi/package.toml pins the flavor theme.toml uses; flavors/ itself is
 # gitignored, so fetch it.
