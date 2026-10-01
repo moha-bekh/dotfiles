@@ -54,6 +54,8 @@ dotfiles/
 │   └── tmux/tmux.conf                 # standalone twin of home/tmux.nix
 ├── scripts/
 │   └── bootstrap-ubuntu.sh            # one-shot Ubuntu setup, see below
+├── ubuntu-server/
+│   └── install.sh                     # Nix-free Ubuntu Server setup (apt + stow), see below
 └── Taskfile.yml                       # `task <name>` shortcuts, see below
 ```
 
@@ -66,6 +68,33 @@ It holds configs for programs that home-manager generates natively (so there's
 no `config/` entry to symlink), kept around for distros where home-manager
 isn't applied at all. `non-nix/tmux/tmux.conf` mirrors what `home/tmux.nix`
 produces — **edit both or they drift.**
+
+## Ubuntu Server without Nix
+
+`ubuntu-server/install.sh` is the lightweight alternative to
+`scripts/bootstrap-ubuntu.sh` for a server where installing Nix isn't wanted.
+It installs bash, git, ssh, tmux (+ tpm and its plugins), nvim, btop,
+fastfetch, starship and the JetBrainsMono Nerd Font from apt or upstream
+releases (noble's neovim is too old for LazyVim), then symlinks the configs
+with GNU stow:
+
+| package               | target                    |
+| --------------------- | ------------------------- |
+| `config/nvim`         | `~/.config/nvim`          |
+| `config/btop`         | `~/.config/btop`          |
+| `config/fastfetch`    | `~/.config/fastfetch`     |
+| `config/shell`        | `~/.config/shell`         |
+| `config/starship`     | `~/.config/starship.toml` |
+| `config/git`          | `~/.gitconfig`            |
+| `non-nix/tmux`        | `~/.config/tmux/tmux.conf` |
+
+```bash
+~/dotfiles/ubuntu-server/install.sh
+```
+
+It's safe to re-run. Any real file in the way of a symlink is moved aside to
+`*.bak-<timestamp>`. Unlike the Nix setup, the LSP servers that
+`config/nvim/lua/plugins/lsp.lua` expects on `PATH` aren't installed.
 
 ## Prerequisites
 
