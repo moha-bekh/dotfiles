@@ -1,3 +1,29 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
 # Default scan_timeout (30ms) is aggressive enough that it can be exceeded
 # by ordinary disk latency, triggering "Scanning current directory timed out".
 scan_timeout = 100
+
+# Three stacked lines instead of one wide one, so a vertical split doesn't
+# truncate the prompt: directory / vcs / toolchains. The `( ... \n)` groups
+# collapse entirely when every module inside them is empty, so a plain
+# directory still renders as a single line.
+format = """
+$username$hostname$localip$shlvl$singularity$kubernetes$nats$directory
+($vcsh$fossil_branch$fossil_metrics$git_branch$git_commit$git_state$git_metrics$git_status$hg_branch$hg_state$pijul_channel
+)($docker_context$package$bun$c$cmake$cobol$cpp$daml$dart$deno$dotnet$elixir$elm$erlang$fennel$fortran$gleam$golang$gradle$haskell$haxe$helm$java$julia$kotlin$lua$maven$mojo$nim$nodejs$ocaml$odin$opa$perl$php$pulumi$purescript$python$quarto$raku$rlang$red$ruby$rust$scala$solidity$swift$terraform$typst$vlang$vagrant$xmake$zig$buf$guix_shell$nix_shell$conda$pixi$meson$spack$memory_usage$aws$gcloud$openstack$azure$direnv$env_var$mise$crystal$custom$sudo$cmd_duration
+)$jobs$battery$time$status$container$netns$os$shell$character"""
+
+# The words that used to join the segments ("in", "on", "is") are now the
+# line breaks themselves, so drop them from the modules that start a line.
+[username]
+format = '[$user]($style) '
+
+[hostname]
+format = '[$ssh_symbol$hostname]($style) '
+
+[git_branch]
+format = '[$symbol$branch(:$remote_branch)]($style) '
+
+[package]
+format = '[$symbol$version]($style) '
