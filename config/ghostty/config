@@ -1,4 +1,7 @@
 theme = TokyoNight Night
+# Second family is the fallback for anything the first doesn't have (emojis)
+font-family = "JetBrainsMono Nerd Font"
+font-family = "Noto Color Emoji"
 font-size = 12
 mouse-hide-while-typing = true
 window-decoration = true

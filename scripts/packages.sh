@@ -28,6 +28,8 @@ CASKS=(
   ghostty
   karabiner-elements
   nikitabobko/tap/aerospace
+  font-jetbrains-mono-nerd-font # config/ghostty/config, plus the icons starship/eza/yazi/tmux draw
+  font-noto-color-emoji
 )
 
 # --- Homebrew ----------------------------------------------------------------

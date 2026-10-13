@@ -63,7 +63,7 @@ fi
 
 # --- tmux plugins (tpm) ------------------------------------------------------
 
-TPM_DIR="$HOME/.tmux/plugins/tpm"
+TPM_DIR="$HOME/.config/tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR/.git" ]; then
   log "tpm: cloning to $TPM_DIR"
   git clone --depth 1 https://github.com/tmux-plugins/tpm "$TPM_DIR"
