@@ -1,0 +1,29 @@
+[user]
+	name = moha-bekh
+	email = moha.bekh.pro@gmail.com
+	signingkey = 2CA767DE743E4400
+[alias]
+	st = status
+  lg = log --graph --pretty=format:'%Cblue%h%Creset %ad %s %C(blue)%d%Creset %C(bold magenta)<%an>%Creset' --date=short
+  ck = checkout
+  br = branch
+	cm = commit -m
+  cam = commit -am
+  saf = diff-tree --no-commit-id --name-only -r
+[interactive]
+	diffFilter = delta --color-only
+[diff]
+	colorMode = default
+[init]
+	defaultBranch = main
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[diff "lfstext"]
+	textconv = cat
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
