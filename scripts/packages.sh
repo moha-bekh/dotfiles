@@ -10,6 +10,7 @@ log() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 # Each tool from the list, followed by what its config needs to work.
 FORMULAE=(
   git git-delta git-lfs # config/git/.gitconfig pipes `git add -p` through delta
+  gh
   tmux
   bash bc coreutils gawk gnu-sed # tokyo-night-tmux needs bash 4.2+ (macOS ships 3.2) and GNU tools
   neovim
