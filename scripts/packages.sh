@@ -11,6 +11,7 @@ log() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 FORMULAE=(
   git git-delta git-lfs # config/git/.gitconfig pipes `git add -p` through delta
   tmux
+  bash bc coreutils gawk gnu-sed # tokyo-night-tmux needs bash 4.2+ (macOS ships 3.2) and GNU tools
   neovim
   ripgrep fd # LazyVim pickers
   node       # mason.nvim installs some LSPs (vtsls...) through npm
