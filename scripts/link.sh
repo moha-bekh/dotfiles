@@ -83,6 +83,14 @@ if command -v tmux >/dev/null; then
   [ "$STARTED_TMUX" -eq 1 ] && tmux kill-session -t tpm-install 2>/dev/null || true
 fi
 
+# --- wallpaper ---------------------------------------------------------------
+# Applied to every desktop. Spaces created later inherit it from the current one.
+
+WALLPAPER="$DOTFILES/config/wallpapers/cherry-blossom.png"
+log "wallpaper: $WALLPAPER"
+osascript -e "tell application \"System Events\" to set picture of every desktop to POSIX file \"$WALLPAPER\"" ||
+  warn "could not set the wallpaper — allow your terminal to control System Events, then re-run"
+
 # --- git ---------------------------------------------------------------------
 # config/git/.gitconfig signs every commit with a GPG key, which a freshly
 # reset Mac won't have: `git commit` fails until it's imported.
