@@ -9,11 +9,12 @@ git clone <this repo> ~/mac-dotfiles
 
 | script               | does                                                                 |
 | -------------------- | -------------------------------------------------------------------- |
-| `install.sh`         | runs both scripts below                                              |
+| `install.sh`         | runs `packages.sh`, `link.sh` and `macos.sh`                         |
 | `scripts/packages.sh`| installs Homebrew if missing, then the formulae and casks it lists   |
 | `scripts/link.sh`    | symlinks `config/*` into `~/.config` and `~`, hooks zsh, yazi, tpm   |
+| `scripts/macos.sh`   | applies macOS settings with `defaults write` (Dock...)               |
 
-Both are safe to re-run. Anything a symlink would replace is moved to
+All are safe to re-run. Anything a symlink would replace is moved to
 `*.bak-<timestamp>`.
 
 ## What goes where
@@ -33,4 +34,5 @@ Both are safe to re-run. Anything a symlink would replace is moved to
 | `git/.gitconfig`      | `~/.gitconfig`             |
 
 To add a package, add it to `FORMULAE` or `CASKS` in `scripts/packages.sh`.
+To add a macOS setting, add a `defaults write` line in `scripts/macos.sh`.
 To add a config, drop it in `config/` and add a `link` line in `scripts/link.sh`.

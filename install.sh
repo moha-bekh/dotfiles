@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fresh Mac: install the packages, then link the configs.
+# Fresh Mac: install the packages, link the configs, apply the macOS settings.
 #
 #   ~/mac-dotfiles/install.sh
 set -euo pipefail
@@ -7,6 +7,7 @@ set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 "$DIR/scripts/packages.sh"
 "$DIR/scripts/link.sh"
+"$DIR/scripts/macos.sh"
 
 cat <<'MSG'
 
