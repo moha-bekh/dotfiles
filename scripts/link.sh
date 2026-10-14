@@ -91,14 +91,4 @@ log "wallpaper: $WALLPAPER"
 osascript -e "tell application \"System Events\" to set picture of every desktop to POSIX file \"$WALLPAPER\"" ||
   warn "could not set the wallpaper — allow your terminal to control System Events, then re-run"
 
-# --- git ---------------------------------------------------------------------
-# config/git/.gitconfig signs every commit with a GPG key, which a freshly
-# reset Mac won't have: `git commit` fails until it's imported.
-
-SIGNING_KEY="$(git config --global user.signingkey || true)"
-if [ -n "$SIGNING_KEY" ] && ! gpg --list-secret-keys "$SIGNING_KEY" >/dev/null 2>&1; then
-  warn "git signs commits with GPG key $SIGNING_KEY, which isn't in this machine's keyring —"
-  warn "brew install gnupg pinentry-mac, then gpg --import it, or commits will fail"
-fi
-
 log "done. Open a new shell (or 'exec zsh') to pick up the new config."
