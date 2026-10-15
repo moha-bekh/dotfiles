@@ -3,14 +3,11 @@
 # pointing here are left alone, and anything else in the way is moved aside to
 # *.bak-<timestamp>.
 #
-#   ~/mac-dotfiles/scripts/link.sh
+#   ~/dotfiles/scripts/link.sh
 set -euo pipefail
 
-DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 STAMP="$(date +%Y%m%d-%H%M%S)"
-
-log() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
-warn() { printf '\033[1;33mwarning:\033[0m %s\n' "$*" >&2; }
 
 # link <source in config/> <target>
 link() {
@@ -32,13 +29,17 @@ link() {
 # Whole directories are linked, not file by file, so files the apps write
 # there (lazy-lock.json, karabiner.json edits from its UI...) land in the repo.
 
-log "linking configs from $DOTFILES"
-for app in nvim tmux btop fastfetch yazi ghostty karabiner shell; do
+log "linking configs from $DOTFILES ($OS)"
+for app in nvim tmux btop fastfetch yazi ghostty shell; do
   link "$app" "$HOME/.config/$app"
 done
 link starship/starship.toml "$HOME/.config/starship.toml"
-link aerospace/.aerospace.toml "$HOME/.aerospace.toml"
 link git/.gitconfig "$HOME/.gitconfig"
+
+if [ "$OS" = macos ]; then
+  link karabiner "$HOME/.config/karabiner"
+  link aerospace/.aerospace.toml "$HOME/.aerospace.toml"
+fi
 
 # --- zsh ---------------------------------------------------------------------
 # Keep ~/.zshrc as a machine-local file (installers like to append to it) and
@@ -84,11 +85,23 @@ if command -v tmux >/dev/null; then
 fi
 
 # --- wallpaper ---------------------------------------------------------------
-# Applied to every desktop. Spaces created later inherit it from the current one.
 
 WALLPAPER="$DOTFILES/config/wallpapers/cherry-blossom.png"
 log "wallpaper: $WALLPAPER"
-osascript -e "tell application \"System Events\" to set picture of every desktop to POSIX file \"$WALLPAPER\"" ||
-  warn "could not set the wallpaper — allow your terminal to control System Events, then re-run"
+case "$OS" in
+macos)
+  # Applied to every desktop. Spaces created later inherit it from the current one.
+  osascript -e "tell application \"System Events\" to set picture of every desktop to POSIX file \"$WALLPAPER\"" ||
+    warn "could not set the wallpaper — allow your terminal to control System Events, then re-run"
+  ;;
+arch)
+  # DankMaterialShell (on niri) owns the wallpaper.
+  if command -v dms >/dev/null; then
+    dms ipc call wallpaper set "$WALLPAPER" >/dev/null || warn "could not set the wallpaper — is DankMaterialShell running?"
+  else
+    warn "no dms found — set the wallpaper by hand"
+  fi
+  ;;
+esac
 
 log "done. Open a new shell (or 'exec zsh') to pick up the new config."

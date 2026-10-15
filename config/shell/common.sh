@@ -1,4 +1,4 @@
-# Shared between bash (arch) and zsh (macos) configs — identical in both originals.
+# Shared between macOS and Arch (and NixOS later): sourced from config/shell/zsh.sh.
 
 # --- Environment ---
 export EDITOR="nvim"

@@ -17,18 +17,23 @@ bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
 # --- Plugins & tool init ---
-# zsh-autosuggestions / zsh-syntax-highlighting come from brew (scripts/packages.sh).
+# zsh-autosuggestions / zsh-syntax-highlighting come from the OS package manager
+# (scripts/<os>/packages.sh), which puts them under a different dir per OS.
 # syntax-highlighting has to be sourced last, after everything that binds widgets.
-BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
-[ -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] &&
-  source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+zsh_plugin() {
+  local dir
+  for dir in "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins; do
+    [ -f "$dir/$1/$1.zsh" ] && source "$dir/$1/$1.zsh" && return
+  done
+}
+zsh_plugin zsh-autosuggestions
 
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
 
 source <(fzf --zsh)
 
-export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:/Users/moha/.local/bin"
+export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:$HOME/.local/bin"
 
 # --- Aliases ---
 alias brc="source ~/.bashrc"
@@ -58,5 +63,4 @@ dict() {
   curl "dict://dict.org/d:$1"
 }
 
-[ -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] &&
-  source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+zsh_plugin zsh-syntax-highlighting

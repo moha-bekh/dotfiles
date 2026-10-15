@@ -2,14 +2,13 @@
 # macOS settings that would otherwise be clicked through System Settings.
 # Safe to re-run: `defaults write` just overwrites the value.
 #
-#   ~/mac-dotfiles/scripts/macos.sh
+#   ~/dotfiles/scripts/macos/settings.sh
 #
 # To find the key behind a setting: `defaults read > before.txt`, change it in
 # System Settings, `defaults read > after.txt`, diff (same with -currentHost).
 set -euo pipefail
 
-log() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
-warn() { printf '\033[1;33mwarning:\033[0m %s\n' "$*" >&2; }
+source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 
 # Dock tile for an app, in the format persistent-apps expects.
 dock_app() {

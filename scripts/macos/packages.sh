@@ -2,10 +2,10 @@
 # Install everything with Homebrew. Safe to re-run: only what's missing gets
 # installed.
 #
-#   ~/mac-dotfiles/scripts/packages.sh
+#   ~/dotfiles/scripts/macos/packages.sh
 set -euo pipefail
 
-log() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
+source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 
 # Each tool from the list, followed by what its config needs to work.
 FORMULAE=(
