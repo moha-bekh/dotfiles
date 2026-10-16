@@ -54,6 +54,19 @@ else
   printf '\n# dotfiles\n%s\n' "$ZSHRC_LINE" >>"$HOME/.zshrc"
 fi
 
+# --- bash --------------------------------------------------------------------
+# Only matters on hosts whose login shell is bash (nixos-btw: this repo
+# doesn't change the login shell there, unlike scripts/arch/packages.sh).
+
+BASHRC_LINE='[ -f "$HOME/.config/shell/bash.sh" ] && source "$HOME/.config/shell/bash.sh"'
+touch "$HOME/.bashrc"
+if grep -qxF "$BASHRC_LINE" "$HOME/.bashrc"; then
+  log "bash: ~/.bashrc already sources config/shell/bash.sh"
+else
+  log "bash: hooking config/shell/bash.sh into ~/.bashrc"
+  printf '\n# dotfiles\n%s\n' "$BASHRC_LINE" >>"$HOME/.bashrc"
+fi
+
 # --- yazi --------------------------------------------------------------------
 # package.toml pins the flavor theme.toml uses; flavors/ itself is gitignored.
 

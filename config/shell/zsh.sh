@@ -18,11 +18,12 @@ bindkey '^[[B' history-search-forward
 
 # --- Plugins & tool init ---
 # zsh-autosuggestions / zsh-syntax-highlighting come from the OS package manager
-# (scripts/<os>/packages.sh), which puts them under a different dir per OS.
+# (scripts/<os>/packages.sh), which puts them under a different dir per OS —
+# home-manager's profile on NixOS, Homebrew on macOS, pacman on Arch.
 # syntax-highlighting has to be sourced last, after everything that binds widgets.
 zsh_plugin() {
   local dir
-  for dir in "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins; do
+  for dir in "$HOME/.nix-profile/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins; do
     [ -f "$dir/$1/$1.zsh" ] && source "$dir/$1/$1.zsh" && return
   done
 }

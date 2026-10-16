@@ -31,6 +31,17 @@ Manual steps left:
   - first `nvim` launch installs the plugins and LSPs
 MSG
   ;;
+nixos)
+  "$DIR/scripts/nixos/packages.sh"
+  "$DIR/scripts/link.sh"
+  cat <<'MSG'
+
+Manual steps left:
+  - system config (niri, DankMaterialShell, boot, users...) is managed in
+    /etc/nixos/configuration.nix, outside this repo — not touched here
+  - first `nvim` launch installs the plugins and LSPs
+MSG
+  ;;
 *)
   warn "unsupported OS — only macOS and Arch for now"
   exit 1
