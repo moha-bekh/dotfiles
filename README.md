@@ -33,6 +33,15 @@ DankMaterialShell live in `/etc/nixos/configuration.nix`, outside this repo
 and untouched by it. `scripts/link.sh` still does the actual symlinking of
 `config/*`, exactly as on Arch/macOS — home-manager is never used for that.
 
+`hosts/nixos/` is a copy of `/etc/nixos`. `hosts/nixos/devctl.nix` sets up
+[devctl](https://github.com/moha-bekh/devctl) (NVIDIA driver, `i2c-dev`, udev
+rules, the `rgb` group, its services); to apply it:
+
+```sh
+sudo cp ~/dotfiles/hosts/nixos/{configuration,devctl}.nix /etc/nixos/
+sudo nixos-rebuild switch   # then log out and back in, for the rgb group
+```
+
 ## What goes where
 
 | config/               | linked to                  |
@@ -43,6 +52,7 @@ and untouched by it. `scripts/link.sh` still does the actual symlinking of
 | `fastfetch/`          | `~/.config/fastfetch`      |
 | `yazi/`               | `~/.config/yazi`           |
 | `ghostty/`            | `~/.config/ghostty`        |
+| `devctl/`             | `~/.config/devctl` (Arch, NixOS) |
 | `karabiner/`          | `~/.config/karabiner` (macOS) |
 | `shell/`              | `~/.config/shell` (sourced from `~/.zshrc`) |
 | `starship/starship.toml` | `~/.config/starship.toml` |

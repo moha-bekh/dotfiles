@@ -1,0 +1,47 @@
+on = true
+
+[lights.board]
+mode = "custom"
+
+[lights.board.regions]
+jcorsair-outer = "000000"
+jpipe1 = "0080FF"
+jrainbow1 = "8000FF"
+jrainbow2 = "000000"
+jrgb1 = "000000"
+onboard1 = "0080FF"
+onboard10 = "000000"
+onboard11 = "000000"
+onboard2 = "000000"
+onboard3 = "000000"
+onboard4 = "000000"
+onboard5 = "000000"
+onboard6 = "000000"
+onboard7 = "000000"
+onboard8 = "000000"
+onboard9 = "000000"
+
+[lights.gpu]
+mode = "tricolor"
+colors = ["8855FF", "000000", "0080FF"]
+
+[lights.mouse]
+mode = "custom"
+
+[lights.mouse.regions]
+logo = "0080FF"
+wheel = "8000FF"
+
+[lights.ram]
+mode = "custom"
+
+[lights.ram.regions]
+stick1 = "0080FF"
+stick2 = "8000FF"
+stick3 = "0080FF"
+stick4 = "8000FF"
+
+[fans.gpu]
+enabled = true
+min = 30
+handoff = 60

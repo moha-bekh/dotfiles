@@ -36,6 +36,12 @@ done
 link starship/starship.toml "$HOME/.config/starship.toml"
 link git/.gitconfig "$HOME/.gitconfig"
 
+# devctl (RGB and GPU fans of the desktop) writes its config.toml here on
+# every change.
+if [ "$OS" = arch ] || [ "$OS" = nixos ]; then
+  link devctl "$HOME/.config/devctl"
+fi
+
 if [ "$OS" = macos ]; then
   link karabiner "$HOME/.config/karabiner"
   link aerospace/.aerospace.toml "$HOME/.aerospace.toml"

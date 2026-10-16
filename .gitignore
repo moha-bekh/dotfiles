@@ -4,3 +4,4 @@ config/yazi/flavors
 config/btop/btop.log
 config/tmux/plugins
 config/ghostty/themes/dankcolors
+config/devctl/config.toml.tmp
