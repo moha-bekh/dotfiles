@@ -27,7 +27,6 @@ arch)
   cat <<'MSG'
 
 Manual steps left:
-  - log out and back in for zsh to become the login shell
   - first `nvim` launch installs the plugins and LSPs
 MSG
   ;;

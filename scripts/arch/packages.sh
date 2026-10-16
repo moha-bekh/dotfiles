@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Install everything with pacman, and make zsh the login shell. Safe to
-# re-run: only what's missing gets installed.
+# Install everything with pacman. Safe to re-run: only what's missing gets
+# installed. The login shell is left alone — config/shell/ covers bash and zsh.
 #
 #   ~/dotfiles/scripts/arch/packages.sh
 set -euo pipefail
@@ -31,6 +31,7 @@ PACKAGES=(
   zed
   ttf-jetbrains-mono-nerd # config/ghostty/config, plus the icons starship/eza/yazi/tmux draw
   noto-fonts-emoji
+  tailscale # reach this machine over the tailnet (Tailscale SSH, see below)
 )
 
 # --- pacman ------------------------------------------------------------------
@@ -49,12 +50,15 @@ fi
 
 git lfs install --skip-repo >/dev/null
 
-# --- login shell -------------------------------------------------------------
+# --- tailscale ---------------------------------------------------------------
+# Joins the tailnet with Tailscale SSH on, so `ssh <user>@<hostname>` works from
+# any device on the tailnet with no sshd or keys to manage. The first run
+# prints a login URL and waits until it's approved.
 
-ZSH="$(command -v zsh)"
-if [ "$(getent passwd "$USER" | cut -d: -f7)" != "$ZSH" ]; then
-  log "shell: making zsh the login shell"
-  chsh -s "$ZSH" || warn "chsh failed — run 'chsh -s $ZSH' by hand"
+sudo systemctl enable --now tailscaled
+if tailscale status >/dev/null 2>&1; then
+  log "tailscale: already logged in"
 else
-  log "shell: zsh is already the login shell"
+  log "tailscale: logging in (open the URL below)"
+  sudo tailscale up --ssh || warn "tailscale up failed — run 'sudo tailscale up --ssh' by hand"
 fi

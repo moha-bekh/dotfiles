@@ -1,6 +1,5 @@
 # Sourced from ~/.bashrc (scripts/link.sh hooks it in). Used on hosts whose
-# login shell is bash rather than zsh — e.g. nixos-btw, where the login shell
-# isn't managed by this repo.
+# login shell is bash rather than zsh — this repo never changes the login shell.
 
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 

@@ -55,8 +55,8 @@ else
 fi
 
 # --- bash --------------------------------------------------------------------
-# Only matters on hosts whose login shell is bash (nixos-btw: this repo
-# doesn't change the login shell there, unlike scripts/arch/packages.sh).
+# Only matters on hosts whose login shell is bash (this repo never changes
+# the login shell, so both rc files are hooked).
 
 BASHRC_LINE='[ -f "$HOME/.config/shell/bash.sh" ] && source "$HOME/.config/shell/bash.sh"'
 touch "$HOME/.bashrc"

@@ -16,7 +16,7 @@ git clone <this repo> ~/dotfiles
 | `scripts/link.sh`            | symlinks `config/*` into `~/.config` and `~`, hooks zsh/bash, yazi, tpm, sets the wallpaper |
 | `scripts/macos/packages.sh`  | installs Homebrew if missing, then the formulae and casks it lists   |
 | `scripts/macos/settings.sh`  | applies macOS settings with `defaults write` (Dock...)               |
-| `scripts/arch/packages.sh`   | installs the same packages with pacman, makes zsh the login shell    |
+| `scripts/arch/packages.sh`   | installs the same packages with pacman, joins the tailnet (Tailscale SSH) |
 | `scripts/nixos/packages.sh`  | installs the personal package list below via standalone home-manager |
 | `scripts/lib.sh`             | shared helpers (`log`, `warn`, OS detection)                         |
 
