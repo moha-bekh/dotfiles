@@ -19,6 +19,7 @@ git clone <this repo> ~/dotfiles
 | `scripts/arch/packages.sh`   | installs the same packages with pacman, joins the tailnet (Tailscale SSH) |
 | `scripts/nixos/packages.sh`  | installs the personal package list below via standalone home-manager |
 | `scripts/lib.sh`             | shared helpers (`log`, `warn`, OS detection)                         |
+| `scripts/orb.sh` | creates an OrbStack Linux machine (arch, debian/ubuntu, fedora) and sets it up with the same shell, tmux, nvim... (`scripts/orb.sh arch dev`) |
 
 All are safe to re-run. Anything a symlink would replace is moved to
 `*.bak-<timestamp>`.

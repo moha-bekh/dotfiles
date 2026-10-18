@@ -23,7 +23,7 @@ bindkey '^[[B' history-search-forward
 # syntax-highlighting has to be sourced last, after everything that binds widgets.
 zsh_plugin() {
   local dir
-  for dir in "$HOME/.nix-profile/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins; do
+  for dir in "$HOME/.nix-profile/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins /usr/share; do
     [ -f "$dir/$1/$1.zsh" ] && source "$dir/$1/$1.zsh" && return
   done
 }
@@ -35,6 +35,7 @@ eval "$(starship init zsh)"
 source <(fzf --zsh)
 
 export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:$HOME/.local/bin"
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env" # rustup (scripts/orb-provision.sh)
 
 # --- Aliases ---
 alias brc="source ~/.bashrc"
