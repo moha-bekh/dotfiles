@@ -41,8 +41,19 @@ Manual steps left:
   - first `nvim` launch installs the plugins and LSPs
 MSG
   ;;
+42)
+  "$DIR/scripts/42/packages.sh"
+  "$DIR/scripts/link.sh"
+  cat <<'MSG'
+
+Manual steps left:
+  - the login shell stays bash (no chsh without sudo): config/shell/bash.sh
+    is hooked into ~/.bashrc, or type `zsh` for the zsh setup
+  - first `nvim` launch installs the plugins and LSPs
+MSG
+  ;;
 *)
-  warn "unsupported OS — only macOS and Arch for now"
+  warn "unsupported OS — only macOS, Arch, NixOS and 42 for now"
   exit 1
   ;;
 esac

@@ -16,14 +16,19 @@ setopt HIST_IGNORE_SPACE
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 
+# --- PATH ---
+# Before the tool init below: on 42 starship, zoxide, fzf... live in ~/.local/bin.
+export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:$HOME/.local/bin"
+
 # --- Plugins & tool init ---
 # zsh-autosuggestions / zsh-syntax-highlighting come from the OS package manager
 # (scripts/<os>/packages.sh), which puts them under a different dir per OS —
-# home-manager's profile on NixOS, Homebrew on macOS, pacman on Arch.
+# home-manager's profile on NixOS, Homebrew on macOS, pacman on Arch, git
+# clones in ~/.local/share/zsh/plugins on 42 (scripts/42/packages.sh).
 # syntax-highlighting has to be sourced last, after everything that binds widgets.
 zsh_plugin() {
   local dir
-  for dir in "$HOME/.nix-profile/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins /usr/share; do
+  for dir in "$HOME/.local/share/zsh/plugins" "$HOME/.nix-profile/share" "${HOMEBREW_PREFIX:-/opt/homebrew}/share" /usr/share/zsh/plugins /usr/share; do
     [ -f "$dir/$1/$1.zsh" ] && source "$dir/$1/$1.zsh" && return
   done
 }
@@ -34,7 +39,6 @@ eval "$(starship init zsh)"
 
 source <(fzf --zsh)
 
-export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/go/bin:$HOME/.local/bin"
 [ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env" # rustup (scripts/orb-provision.sh)
 
 # --- Aliases ---

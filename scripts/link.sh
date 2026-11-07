@@ -121,6 +121,13 @@ arch)
     warn "no dms found — set the wallpaper by hand"
   fi
   ;;
+42)
+  # GNOME
+  for key in picture-uri picture-uri-dark; do
+    gsettings set org.gnome.desktop.background "$key" "file://$WALLPAPER" ||
+      warn "could not set the wallpaper — set it by hand"
+  done
+  ;;
 esac
 
 log "done. Open a new shell (or 'exec zsh') to pick up the new config."
