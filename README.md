@@ -74,6 +74,7 @@ sudo nixos-rebuild switch   # then log out and back in, for the rgb group
 | `aerospace/.aerospace.toml` | `~/.aerospace.toml` (macOS) |
 | `claude/settings.json` | `~/.claude/settings.json` (Claude Code) |
 | `claude/statusline.sh` | `~/.claude/statusline.sh` (its status line) |
+| `codex/config.toml` | `~/.codex/config.toml` (Codex CLI) |
 | `git/.gitconfig`      | `~/.gitconfig`             |
 
 To add a package, add it to every `scripts/<os>/packages.sh` (`FORMULAE`/`CASKS`
@@ -81,3 +82,8 @@ on macOS, `PACKAGES` on Arch, `home.packages` in `scripts/nixos/home.nix`, a
 `from_release` line in `scripts/42/packages.sh`).
 To add a macOS setting, add a `defaults write` line in `scripts/macos/settings.sh`.
 To add a config, drop it in `config/` and add a `link` line in `scripts/link.sh`.
+
+Codex CLI is installed for the user via npm on Arch/macOS and via home-manager
+on NixOS. Sign in with `codex` on each machine. Its authentication, sessions
+and caches remain local in `~/.codex`; only `config.toml` is linked. The
+configuration also contains the current machine’s trusted project paths.

@@ -42,6 +42,9 @@ link git/.gitconfig "$HOME/.gitconfig"
 link claude/settings.json "$HOME/.claude/settings.json"
 link claude/statusline.sh "$HOME/.claude/statusline.sh"
 
+# Codex keeps authentication, sessions and caches alongside this file.
+link codex/config.toml "$HOME/.codex/config.toml"
+
 # devctl (RGB and GPU fans of the desktop) writes its config.toml here on
 # every change.
 if [ "$OS" = arch ] || [ "$OS" = nixos ]; then

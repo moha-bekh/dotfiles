@@ -73,3 +73,12 @@ else
   log "claude: installing Claude Code"
   curl -fsSL https://claude.ai/install.sh | bash || warn "Claude Code install failed — see https://claude.com/claude-code"
 fi
+
+# --- Codex CLI ---------------------------------------------------------------
+# Install for this user; the shared shell config adds ~/.local/bin to PATH.
+if command -v codex >/dev/null; then
+  log "codex: already installed"
+else
+  log "codex: installing Codex CLI"
+  npm install --global --prefix "$HOME/.local" @openai/codex || warn "Codex install failed — see https://developers.openai.com/codex/cli"
+fi

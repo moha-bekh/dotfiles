@@ -1,0 +1,61 @@
+model = "gpt-6.1-terra"
+model_reasoning_effort = "low"
+approvals_reviewer = "user"
+[tui]
+screen_reader_detection_done = true
+status_line = ["permissions", "five-hour-limit", "weekly-limit", "used-tokens"]
+status_line_use_colors = true
+
+[tui.model_availability_nux]
+"gpt-6.1-sol" = 4
+
+[projects."/home/moha/dev/distroproof"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/VMAnyware"]
+trust_level = "trusted"
+
+[projects."/home/moha/dotfiles"]
+trust_level = "trusted"
+
+[projects."/home/moha/devctl"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/devutils"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/pkgx"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/zml-devutils-research"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/RUG"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/devutils-org.github.io"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/atfq"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/devutils-org.com"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/omniscient"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/kyber"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/spotflow"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/kyber-devutils-research"]
+trust_level = "trusted"
+
+[projects."/home/moha/dev/PI"]
+trust_level = "trusted"
+
+[notice]
+hide_rate_limit_model_nudge = true
