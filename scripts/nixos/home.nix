@@ -34,6 +34,7 @@
     zed-editor
     nerd-fonts.jetbrains-mono # config/ghostty/config, plus the icons starship/eza/yazi/tmux draw
     noto-fonts-color-emoji
+    claude-code # config/claude/ (settings, status line) is linked by scripts/link.sh
   ];
 
   # Builds the fontconfig cache for the fonts above — they're installed here,

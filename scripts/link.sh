@@ -36,6 +36,12 @@ done
 link starship/starship.toml "$HOME/.config/starship.toml"
 link git/.gitconfig "$HOME/.gitconfig"
 
+# Claude Code: only these two files, not ~/.claude itself (it also holds
+# sessions, history, caches...). Settings changed from inside Claude Code land
+# in the repo.
+link claude/settings.json "$HOME/.claude/settings.json"
+link claude/statusline.sh "$HOME/.claude/statusline.sh"
+
 # devctl (RGB and GPU fans of the desktop) writes its config.toml here on
 # every change.
 if [ "$OS" = arch ] || [ "$OS" = nixos ]; then

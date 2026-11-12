@@ -72,6 +72,8 @@ sudo nixos-rebuild switch   # then log out and back in, for the rgb group
 | `shell/`              | `~/.config/shell` (sourced from `~/.zshrc`) |
 | `starship/starship.toml` | `~/.config/starship.toml` |
 | `aerospace/.aerospace.toml` | `~/.aerospace.toml` (macOS) |
+| `claude/settings.json` | `~/.claude/settings.json` (Claude Code) |
+| `claude/statusline.sh` | `~/.claude/statusline.sh` (its status line) |
 | `git/.gitconfig`      | `~/.gitconfig`             |
 
 To add a package, add it to every `scripts/<os>/packages.sh` (`FORMULAE`/`CASKS`

@@ -72,3 +72,14 @@ for c in "${CASKS[@]}"; do
 done
 
 git lfs install --skip-repo >/dev/null
+
+# --- claude code -------------------------------------------------------------
+# Native installer (~/.local/bin/claude, updates itself). config/claude/ is
+# linked by scripts/link.sh.
+
+if command -v claude >/dev/null; then
+  log "claude: already installed"
+else
+  log "claude: installing Claude Code"
+  curl -fsSL https://claude.ai/install.sh | bash || warn "Claude Code install failed — see https://claude.com/claude-code"
+fi
